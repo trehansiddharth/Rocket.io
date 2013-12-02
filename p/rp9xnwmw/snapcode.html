@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Snapcode: Code here, deploy anywhere</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link href="/public/css/bootstrap.css" rel="stylesheet" />
+		<link href="/public/css/bootstrap.min.css" rel="stylesheet" />
+		<link href="/public/snapcode.css" rel="stylesheet" />
+		<link href='http://fonts.googleapis.com/css?family=Vampiro+One' rel='stylesheet' type='text/css'>
+		<link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+	</head>
+	<body>
+		<script src="http://code.jquery.com/jquery.js"></script>
+		<script src="/public/js/bootstrap.min.js"></script>
+		<script scr="/public/delivery.js"></script>
+		<script src="/public/ace/src/ace.js"></script>
+		<script src="/public/ace/src/mode-haskell.js"></script>
+		<script src="/public/ace/src/mode-abap.js"></script>
+		<script src="/public/ace/src/mode-actionscript.js"></script>
+		<script src="/public/ace/src/mode-ada.js"></script>
+		<script src="/public/ace/src/mode-asciidoc.js"></script>
+		<script src="/public/ace/src/mode-assembly_x86.js"></script>
+		<script src="/public/ace/src/mode-autohotkey.js"></script>
+		<script src="/public/ace/src/mode-batchfile.js"></script>
+		<script src="/public/ace/src/mode-c9search.js"></script>
+		<script src="/public/ace/src/mode-c_cpp.js"></script>
+		<script src="/public/ace/src/mode-clojure.js"></script>
+		<script src="/public/ace/src/mode-cobol.js"></script>
+		<script src="/public/ace/src/mode-coffee.js"></script>
+		<script src="/public/ace/src/mode-coldfusion.js"></script>
+		<script src="/public/ace/src/mode-csharp.js"></script>
+		<script src="/public/ace/src/mode-css.js"></script>
+		<script src="/public/ace/src/mode-curly.js"></script>
+		<script src="/public/ace/src/mode-dart.js"></script>
+		<script src="/public/ace/src/mode-diff.js"></script>
+		<script src="/public/ace/src/mode-django.js"></script>
+		<script src="/public/ace/src/mode-d.js"></script>
+		<script src="/public/ace/src/mode-dot.js"></script>
+		<script src="/public/ace/src/mode-ejs.js"></script>
+		<script src="/public/ace/src/mode-erlang.js"></script>
+		<script src="/public/ace/src/mode-forth.js"></script>
+		<script src="/public/ace/src/mode-ftl.js"></script>
+		<script src="/public/ace/src/mode-glsl.js"></script>
+		<script src="/public/ace/src/mode-golang.js"></script>
+		<script src="/public/ace/src/mode-groovy.js"></script>
+		<script src="/public/ace/src/mode-haml.js"></script>
+		<script src="/public/ace/src/mode-handlebars.js"></script>
+		<script src="/public/ace/src/mode-haskell.js"></script>
+		<script src="/public/ace/src/mode-haxe.js"></script>
+		<script src="/public/ace/src/mode-html_completions.js"></script>
+		<script src="/public/ace/src/mode-html.js"></script>
+		<script src="/public/ace/src/mode-html_ruby.js"></script>
+		<script src="/public/ace/src/mode-ini.js"></script>
+		<script src="/public/ace/src/mode-jack.js"></script>
+		<script src="/public/ace/src/mode-jade.js"></script>
+		<script src="/public/ace/src/mode-java.js"></script>
+		<script src="/public/ace/src/mode-javascript.js"></script>
+		<script src="/public/ace/src/mode-jsoniq.js"></script>
+		<script src="/public/ace/src/mode-json.js"></script>
+		<script src="/public/ace/src/mode-jsp.js"></script>
+		<script src="/public/ace/src/mode-jsx.js"></script>
+		<script src="/public/ace/src/mode-julia.js"></script>
+		<script src="/public/ace/src/mode-latex.js"></script>
+		<script src="/public/ace/src/mode-less.js"></script>
+		<script src="/public/ace/src/mode-liquid.js"></script>
+		<script src="/public/ace/src/mode-lisp.js"></script>
+		<script src="/public/ace/src/mode-livescript.js"></script>
+		<script src="/public/ace/src/mode-logiql.js"></script>
+		<script src="/public/ace/src/mode-lsl.js"></script>
+		<script src="/public/ace/src/mode-lua.js"></script>
+		<script src="/public/ace/src/mode-luapage.js"></script>
+		<script src="/public/ace/src/mode-lucene.js"></script>
+		<script src="/public/ace/src/mode-makefile.js"></script>
+		<script src="/public/ace/src/mode-markdown.js"></script>
+		<script src="/public/ace/src/mode-matlab.js"></script>
+		<script src="/public/ace/src/mode-mushcode_high_rules.js"></script>
+		<script src="/public/ace/src/mode-mushcode.js"></script>
+		<script src="/public/ace/src/mode-mysql.js"></script>
+		<script src="/public/ace/src/mode-nix.js"></script>
+		<script src="/public/ace/src/mode-objectivec.js"></script>
+		<script src="/public/ace/src/mode-ocaml.js"></script>
+		<script src="/public/ace/src/mode-pascal.js"></script>
+		<script src="/public/ace/src/mode-perl.js"></script>
+		<script src="/public/ace/src/mode-pgsql.js"></script>
+		<script src="/public/ace/src/mode-php.js"></script>
+		<script src="/public/ace/src/mode-plain_text.js"></script>
+		<script src="/public/ace/src/mode-powershell.js"></script>
+		<script src="/public/ace/src/mode-prolog.js"></script>
+		<script src="/public/ace/src/mode-properties.js"></script>
+		<script src="/public/ace/src/mode-protobuf.js"></script>
+		<script src="/public/ace/src/mode-python.js"></script>
+		<script src="/public/ace/src/mode-rdoc.js"></script>
+		<script src="/public/ace/src/mode-rhtml.js"></script>
+		<script src="/public/ace/src/mode-r.js"></script>
+		<script src="/public/ace/src/mode-ruby.js"></script>
+		<script src="/public/ace/src/mode-rust.js"></script>
+		<script src="/public/ace/src/mode-sass.js"></script>
+		<script src="/public/ace/src/mode-scad.js"></script>
+		<script src="/public/ace/src/mode-scala.js"></script>
+		<script src="/public/ace/src/mode-scheme.js"></script>
+		<script src="/public/ace/src/mode-scss.js"></script>
+		<script src="/public/ace/src/mode-sh.js"></script>
+		<script src="/public/ace/src/mode-sjs.js"></script>
+		<script src="/public/ace/src/mode-snippets.js"></script>
+		<script src="/public/ace/src/mode-soy_template.js"></script>
+		<script src="/public/ace/src/mode-space.js"></script>
+		<script src="/public/ace/src/mode-sql.js"></script>
+		<script src="/public/ace/src/mode-stylus.js"></script>
+		<script src="/public/ace/src/mode-svg.js"></script>
+		<script src="/public/ace/src/mode-tcl.js"></script>
+		<script src="/public/ace/src/mode-tex.js"></script>
+		<script src="/public/ace/src/mode-textile.js"></script>
+		<script src="/public/ace/src/mode-text.js"></script>
+		<script src="/public/ace/src/mode-tmsnippet.js"></script>
+		<script src="/public/ace/src/mode-toml.js"></script>
+		<script src="/public/ace/src/mode-twig.js"></script>
+		<script src="/public/ace/src/mode-typescript.js"></script>
+		<script src="/public/ace/src/mode-vbscript.js"></script>
+		<script src="/public/ace/src/mode-velocity.js"></script>
+		<script src="/public/ace/src/mode-verilog.js"></script>
+		<script src="/public/ace/src/mode-vhdl.js"></script>
+		<script src="/public/ace/src/mode-xml.js"></script>
+		<script src="/public/ace/src/mode-xquery.js"></script>
+		<script src="/public/ace/src/mode-yaml.js"></script>
+		<script src="/public/snapcode.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="/public/ace/src/ext-modelist.js"></script>
+		<div class="container">
+			<div class="row row-navbar">
+				<div class="navbar navbar-static-top navbar-inverse navbar-default">
+					<div class="navbar-inner">
+						<div class="float-left">
+							<ul class="nav navbar-nav">
+								<li id="brand"><a>Snapcode</a></li>
+							<ul>
+						</div>
+						<div class="col-md-offset-1 col-sm-7 col-md-7">
+							<form class="navbar-form" role="search">
+								<div class="input-group">
+									<input type="text" class="form-control" placeholder="Search..." name="srch-term" id="srch-term">
+									<div class="input-group-btn">
+										<button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+									</div>
+								</div>
+							</form>
+						</div>
+						<div class="pull-right">
+							<div class="btn-group pull-right">
+								<button id="download" type="button" class="btn btn-primary navbar-btn">Download</button>
+								<button id="push" type="button" class="btn btn-success navbar-btn">Commit</button>
+								<button id="build" type="button" class="btn btn-danger navbar-btn">Build</button>
+								<button type="button" class="btn btn-danger navbar-btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span><span class="sr-only">Toggle Dropdown</span></button>
+								<ul class="dropdown-menu" role="menu">
+									<li><a href="#">On server <i class="glyphicon glyphicon-ok"></i></a></li>
+									<li><a href="#">Locally</a></li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row row-main">
+				<div class="col-md-2 box">
+					<div class="super-select box-element">
+						<div class="item add-file selected"><span class="glyphicon glyphicon-plus-sign"></span> Create file...</div>
+						<div id="upload">
+							<p id="upload-text">Drag & drop or <a id="choosefile">choose file</a> to upload<p>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-10 box">
+					<div class="box-element">
+						<div id="editor" class="invisible-element">
+							
+						</div>
+						<div id="start" class="invisible-element">
+							<div id="alpha" class="alert alert-warning alert-dismissable">
+								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+								<strong>Warning!</strong> Snapcode is not yet stable! You can report bugs <a class="alert-link">by clicking this link</a>.
+							</div>
+							<div id="start-text">
+								<!--<span id="warning-glyph" class="glyphicon glyphicon-warning-sign"></span>-->
+								<div id="empty">
+									<h1>You don't have any files yet</h1><br />
+									<p>Upload a file or copy and paste your code to get started.</p><br />
+								</div>
+								<div id="notempty" class="invisible-element">
+									<h1>Create file</h1><br />
+								</div>
+								<textarea id="cpfile" class="form-control" rows="9" placeholder="Copy & paste your code here (leave empty to create a blank file)"></textarea> <br />
+								<form class="form-inline">
+									<input id="filename" type="text" class="form-control" placeholder="File name"></input>
+								</form> <br />
+								<button id="makeproject" type="button" class="btn btn-success btn-lg">Add file to project</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--<div class="row row-main chatbar">
+				
+			</div>-->
+		</div>
+	</body>
+</html>

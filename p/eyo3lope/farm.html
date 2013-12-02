@@ -1,0 +1,69 @@
+<html>
+
+<head>
+
+<style> p {line-height: 2em;} </style>
+
+</head>
+
+<p>
+
+Hi MIT IEEE/ACM, I'm Sid, and I'm a Haskell enthusiast. <br />
+
+A few weeks ago, I had the opportunity to attend a few of the conferences following the International Conference on Functional Programming (or ICFP) in Boston. These included HOPE (Higher-Order Programming with Effects), FARM (Functional Art, Music, Modeling and Design), and a few others on topics like Erlang and compiler research. One main focus of the conferences, of course, was on ``beautiful'' programs coded in Haskell. <br />
+
+I found FARM to be the most interesting conference and spent most of my time there. Most of the presentations were about synthesizing music that sounded like that made by human composers, although there were a few non-music projects too. <br />
+
+The first one that caught my eye (ear?) was on synthesizing music that was based on repetitions but would make one small change each cycle. I missed the earlier part of his demo (I was at HOPE before then), but it was based on arranging a predetermined set of notes as states in a graph and looking for cycles. Every few repeats, a modification would be made to the cycle, and the result was music that sounded natural and lively. Apparently, he had also been able to get people to dance to his music. His next step was in incorporating genetic algorithms into his code, and he had a very simple way of doing it. When examining natural language, there is a general trend that the second most common letter is half as frequent as the most common, the third most common is a third as frequent as the most common, etc. According to him, music by human composers also follows this pattern, so one fitness function could be based on this surprisingly simple characteristic. <br />
+
+Another related demo was based on treating music like a <a href="http://en.wikipedia.org/wiki/Context-free_grammar">context-free grammar</a>. You start with a random series of chords, which are multiple notes played at the same time. Then, using specific pre-defined rules that preserve the total duration of the notes, you replace each note with new some new notes however many times as necessary (essentially an <a href="http://en.wikipedia.org/wiki/L-system">L system</a>). Surprisingly, if you pick the right rules, you can generate music like the following: <br />
+
+<iframe width="100%" height="166" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/98400395"></iframe>
+
+Notice that you have similar sounds (in that relative notes and durations are the same) but with different pitches each time, which is a function of the grammar that was used to generate the music. Given that you know the rules, then you can potentially generate music from any genre possible. That is one of the goals of the presenter: she wants to incorporate machine learning to find out the grammars of various genres of music and make music that is even more realistic. <br />
+
+The rules that she used to generate her music when she demoed it at FARM were taken from a textbook. Some of the rules overlap, so there is a probability assigned to each rule. A generative algorithm picks a rule at random (weighted by their respective probabilities) on each round and applies it to the music until something like the following is produced: <br />
+
+<iframe width="100%" height="166" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/103489766"></iframe>
+
+(Both samples taken from her <a href="https://soundcloud.com/donyaquick">Soundcloud page</a>) <br />
+
+At one point, she compared her algorithmic music with a real piece of classical music (both in a similar style), and it was incredible how spot-on her music was. <br />
+
+This was, of course, all written in Haskell. <br />
+
+But the conference wasn't just about music. There was a presentation by Brent Yorgey, the main organizer of the conference, about a new animations package he had made which was based on an old diagrams package he had written earlier. His diagrams package was essentially a domain-specific language based on Haskell that could create diagrams in a vein similar to the <a href="http://www.texample.net/tikz/examples/">tikz package</a> from LaTeX. His animations package extended diagrams and allowed the construction of animations. You could specify what was rotating, what was moving (and how), and you could glue animations together or splice them. One of his key insights was that an animation shouldn't necessarily have a beginning or an end. They should be infinitely long, and in the end you should be able to splice out only the segments that you need. Haskell's lazy evaluation feature, in which things are only evaluated when needed, allows you to create things like infinitely long lists (as long as you only require a finite segment of it at a time). The idea of infinitely long animations plays very well to one of Haskell's most useful features. This way of looking at animations also allows you to not have to worry about when an animation ends or when it starts all the time: you only have to worry about it at the end, when you choose which segments of the animation you want. <br />
+
+He had some interesting demos to show us, like the proof of the Pythagorean theorem (I apologize beforehand for the poor quality of the pictures in this entry): <br />
+
+[insert pythag.jpg] <br />
+
+Later on, he revealed to us that he'd been talking to one of the members of the conference before his presentation, who showed him that his code had been done completely wrong, but it was very cool nonetheless. <br />
+
+There was also a demo on rope-tying with Haskell. Using another domain-specific language, you can tell Haskell how to braid multiple pieces of rope together, and it will create a diagram of the final braided product, with the ends tied together for the final touch: <br />
+
+[insert braid.jpg] <br />
+
+All of this written in about 20 lines of code! Definitely an application of Haskell I hadn't thought of before. <br />
+
+The conference ended with a presentation on something entirely different: visualizing arbitrary programs using pictures. His idea was that you start with a few basic combinators: the <a href="http://en.wikipedia.org/wiki/SKI_combinator_calculus">S, K, and I combinators</a>. It is known that any program can be written with these three combinators. However, it turns out that you don't really need the I combinator: you can rewrite it in terms of just the S and K combinators. It also turns out that you can rewrite the S and K combinators in terms of another combinator, called the X combinator or the <a href="http://en.wikipedia.org/wiki/Iota_and_Jot">iota combinator</a>. Then, you can write programs like the following: <br />
+
+(X(X(X))) <br />
+
+But then the parentheses are a bit redundant, so we can choose to keep only the right parentheses: <br />
+
+XXX))) <br />
+
+And this almost looks like binary: <br />
+
+111000 <br />
+
+This is the basis of the Jot programming language. The presenter's idea was that since Jot programs are just numbers, you can generate arbitrary programs in a two-dimensional plot, and measure how many reductions it takes to get to an answer, which will be represented by a hue in the plot. This generates patterns like this: <br />
+
+[insert tarpit.bmp, has been taken from the author's github page, licensed under GPL] <br />
+
+It's incredible that you can use programs to visualize so many things, from the most theoretical, like SKI calculus, to the most practical, like braiding. Before the conference, I never realized how good computers were at synthesizing music. Now, I plan on using what I learned from the demos in my own projects.
+
+</p>
+
+</html>
