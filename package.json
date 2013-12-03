@@ -1,20 +1,20 @@
 {
-	"name": "Snapcode",
-	"description": "Code here, deploy anywhere",
-	"version": "0.0.3",
-	"dependencies": {
-		"express": "3.x",
-		"socket.io-client": "~0.9.6",
-		"socket.io": "~0.9.6",
-		"connect": "x",
-		"node-zip": "1.0.x",
-		"delivery": "0.0.3"
-	},
-	"subdomain": "snapcode",
-	"scripts": {
-		"start": "node app.js"
-	},
-	"engines": {
-		"node": "0.10.x"
-	}
+        "name": "Snapcode",
+        "description": "Code here, deploy anywhere",
+        "version": "0.0.3-1",
+        "dependencies": {
+                "express": "3.x",
+                "socket.io-client": "~0.9.6",
+                "socket.io": "~0.9.6",
+                "connect": "x",
+                "node-zip": "1.0.x",
+                "delivery": "0.0.3"
+        },
+        "subdomain": "snapcode",
+        "scripts": {
+                "start": "node app.js"
+        },
+        "engines": {
+                "node": "0.10.x"
+        }
 }

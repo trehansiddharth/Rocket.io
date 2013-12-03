@@ -125,9 +125,9 @@
 		<script src="/public/snapcode.js"></script>
 		<script src="/socket.io/socket.io.js"></script>
 		<script async src="/public/ace/src/ext-modelist.js"></script>
-		<div class="container">
-			<div class="row row-navbar">
-				<div class="navbar navbar-static-top navbar-inverse navbar-default">
+		<table class="page">
+			<tr class="row-navbar">
+				<td colspan="3" class="navbar navbar-static-top navbar-inverse navbar-default">
 					<div class="navbar-inner">
 						<div class="float-left">
 							<ul class="nav navbar-nav">
@@ -145,42 +145,15 @@
 							</form>
 						</div>
 						<div class="pull-right">
-							<!--<ul class="nav navbar-nav">
-								<li id="chat" class="dropdown tool">
-									<a id="chat-icon" href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-comment"></i></a>
-									<div class="dropdown-menu">
-										<p class="messages">
-											x sdf<br />
-											sdfsdf<br />
-										</p>
-										<form class="form-inline">
-											<input id="message" type="text"></input>
-										</form>
-									</div>
-								</li>
-								<li id="build" class="dropdown tool">
-									<a id="build-icon" href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-cog"></i></a>
-									<ul class="dropdown-menu">
-									</ul>
-								</li>
-							</ul>-->
 							<div class="btn-group pull-right">
-								<!--<button id="download" type="button" class="btn btn-primary navbar-btn">Download</button>
-								<button id="push" type="button" class="btn btn-success navbar-btn">Commit</button>
-								<button id="build" type="button" class="btn btn-danger navbar-btn">Build</button>
-								<button type="button" class="btn btn-danger navbar-btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span><span class="sr-only">Toggle Dropdown</span></button>
-								<ul class="dropdown-menu" role="menu">
-									<li><a href="#">On server <i class="glyphicon glyphicon-ok"></i></a></li>
-									<li><a href="#">Locally</a></li>
-								</ul>-->
 								<button id="sync" type="button" class="btn btn-success navbar-btn"><i class="glyphicon glyphicon-refresh"></i> Sync</button>
 							</div>
 						</div>
 					</div>
-				</div>
-			</div>
-			<div class="row row-main">
-				<div class="col-sm-2 col-md-2 box">
+				</td>
+			</tr>
+			<tr class="row-main">
+				<td class="left box">
 					<div id="leftbox">
 						<div class="super-select box-element">
 							<div class="item add-file selected"><span class="glyphicon glyphicon-plus-sign"></span> Add file...</div>
@@ -189,11 +162,11 @@
 							<p id="upload-text">Drag & drop or <a id="choosefile">choose file</a> to upload<p>
 						</div>
 					</div>
-				</div>
-				<div class="col-sm-8 col-md-8 box">
+				</td>
+				<td class="box">
 					<div class="box-element">
-						<div id="editor" class="invisible-element">
-							
+						<div id="editor" class="box-element invisible-element">
+					
 						</div>
 						<div id="start" class="invisible-element">
 							<div id="alpha" class="alert alert-warning alert-dismissable">
@@ -216,26 +189,32 @@
 							</div>
 						</div>
 					</div>
-				</div>
-				<div class="col-sm-2 col-md-2 box">
-					<div id="chatbox">
-						<!--<div class="divrow">
-							<p id="users" class="cell"><b>Online:</b><br /></p>
-						</div>-->
-						<div class="divrow mainrow">
-							<div id="stream" class="cell">
+				</td>
+				<td class="right box">
+					<table id="chatbox">
+						<!--<tr>
+							<td>
+								<p id="users"><b>Online:</b><br /></p>
+							</td>
+						</tr>-->
+						<tr class="mainrow">
+							<td id="stream">
 								<div id="substream" class="scrollable"></div>
-							</div>
-						</div>
-						<div class="divrow">
-							<p id="username" class="box-element cell"><!--<i id="chat-icon" class="glyphicon glyphicon-comment"></i>--></p>
-						</div>
-						<div class="divrow">
-							<textarea id="message" type="text" rows="3"></textarea>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<p id="username"><!--<i id="chat-icon" class="glyphicon glyphicon-comment"></i>--></p>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<textarea id="message" type="text" rows="3"></textarea>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
 	</body>
 </html>
