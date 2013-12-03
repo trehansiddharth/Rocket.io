@@ -172,8 +172,16 @@ $(document).ready(function ()
 			$("#username").append(" <span class=\"tool-text\">" + username + "</span>");
 		});
 		
+		var nowtalking = null;
+		
 		socket.on('chat', function(username, message) {
-			$("#stream").append("<b>" + username + "</b>: " + message.replace("<", "&lt;").replace(">", "&gt;") + "<br />");
+			if (nowtalking != username)
+			{
+				$("#substream").append("<div class=\"well well-sm chatmsg\"><b>" + username + "</b><br /><div class=\"chat-text\"></div></div>");
+				nowtalking = username;
+			}
+			$(".chat-text").last().append(message.replace("<", "&lt;").replace(">", "&gt;") + "<br />");
+			$("#substream").scrollTop($("#substream")[0].scrollHeight);
 		});
 		
 		socket.on('user-online', function(username) {
