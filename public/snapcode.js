@@ -168,16 +168,28 @@ $(document).ready(function ()
 			socket.emit('file-save', editor.getSession().getValue());
 		});
 		
+		var myname = null;
+		
 		socket.on('update-username', function (username) {
 			$("#username").append(" <span class=\"tool-text\">" + username + "</span>");
+			myname = username;
 		});
 		
 		var nowtalking = null;
 		
 		socket.on('chat', function(username, message) {
+			var talkerclass;
 			if (nowtalking != username)
 			{
-				$("#substream").append("<div class=\"well well-sm chatmsg\"><b>" + username + "</b><br /><div class=\"chat-text\"></div></div>");
+				if (username == myname)
+				{
+					talkerclass = "talker-me";
+				}
+				else
+				{
+					talkerclass = "talker-notme";
+				}
+				$("#substream").append("<div class=\"well well-sm chatmsg\"><div class=\"talker " + talkerclass + "\">" + username + "</div><div class=\"" + talkerclass + " chat-text\"></div></div>");
 				nowtalking = username;
 			}
 			$(".chat-text").last().append(message.replace("<", "&lt;").replace(">", "&gt;") + "<br />");
@@ -216,6 +228,8 @@ $(document).ready(function ()
 			url: "/d/download"
 		});
 	});
+	
+	//$("#page").colResizable({ liveDrag:true });
 });
 function handleFileUpload(files,obj)
 {

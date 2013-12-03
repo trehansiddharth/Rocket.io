@@ -125,7 +125,7 @@
 		<script src="/public/snapcode.js"></script>
 		<script src="/socket.io/socket.io.js"></script>
 		<script async src="/public/ace/src/ext-modelist.js"></script>
-		<table class="page">
+		<table id="page">
 			<tr class="row-navbar">
 				<td colspan="3" class="navbar navbar-static-top navbar-inverse navbar-default">
 					<div class="navbar-inner">
@@ -192,11 +192,6 @@
 				</td>
 				<td class="right box">
 					<table id="chatbox">
-						<!--<tr>
-							<td>
-								<p id="users"><b>Online:</b><br /></p>
-							</td>
-						</tr>-->
 						<tr class="mainrow">
 							<td id="stream">
 								<div id="substream" class="scrollable"></div>
@@ -204,7 +199,7 @@
 						</tr>
 						<tr>
 							<td>
-								<p id="username"><!--<i id="chat-icon" class="glyphicon glyphicon-comment"></i>--></p>
+								<p id="username"></p>
 							</td>
 						</tr>
 						<tr>

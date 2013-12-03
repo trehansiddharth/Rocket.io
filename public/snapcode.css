@@ -8,7 +8,7 @@ html, body {
 	/*overflow: hidden;*/
 	overflow-x: hidden;
 }
-.page {
+#page {
 	height: 100%;
 	width: 100%;
 	padding: 0px;
@@ -112,6 +112,16 @@ html, body {
 }
 .chat-text {
 	padding-left: 10px;
+}
+.talker {
+	font-weight: 700;
+	margin-bottom: 2px;
+	padding: 0px;
+}
+.talker-me {
+	text-align: right;
+}
+.talker-notme {
 }
 div.scrollable {
     width: 100%;
