@@ -112,24 +112,6 @@ app.get('/', function(request, response) {
 	//response.sendfile("./index.html");
 });
 
-app.post('/d/upload', function(request, response) {
-	var parsed = request.headers.referer.split("/");
-	var projid = parsed[parsed.length - 1];
-	var msg = request.body[Object.keys(request.body)[0]];
-	var start = msg.indexOf("\r\n\r\n") + 4;
-	var stop = msg.lastIndexOf("\n\r\n");
-	var contents = msg.substr(start, stop - start);
-	start = msg.indexOf("filename=\"") + 10;
-	stop = msg.indexOf("\"\r\nContent-Type:");
-	var filename = msg.substr(start, stop - start);
-	var path = "./p/" + projid + "/" + filename;
-	console.log(path);
-	fs.openSync(path, "w");
-	fs.writeFileSync(path, contents);
-	io.sockets.in(projid).emit('update-files', [filename]);
-	response.end();
-});
-
 app.use(function(req, res, next) {
 	if (req.path.substring(0, 3) == '/p/')
 	{
@@ -221,37 +203,6 @@ random_username = function () {
 	random2 = Math.floor(Math.random() * nouns.length);
 	return adjectives[random1] + " " + nouns[random2];
 };
-function get_line(filename, line_no, callback) {
-    var stream = fs.createReadStream(filename, {
-      flags: 'r',
-      encoding: 'utf-8',
-      fd: null,
-      mode: 0666,
-      bufferSize: 64 * 1024
-    });
-
-    var fileData = '';
-    stream.on('data', function(data){
-      fileData += data;
-
-      // The next lines should be improved
-      var lines = fileData.split("\n");
-
-      if(lines.length >= +line_no){
-        stream.destroy();
-        callback(null, lines[+line_no]);
-      }
-    });
-
-    stream.on('error', function(){
-      callback('Error', null);
-    });
-
-    stream.on('end', function(){
-      callback('File end reached without finding line', null);
-    });
-
-}
 function is_valid_filename(filename) {
 	return true;
 }

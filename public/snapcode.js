@@ -4,6 +4,7 @@ $(document).ready(function ()
 	editor.setValue("", -1);
 	editor.setFontSize(15)
 	var uploading = true;
+	var reader = new FileReader();
 	$("#upload").on('dragenter', function (e) 
 	{
 		if (uploading)
@@ -30,7 +31,7 @@ $(document).ready(function ()
 			var files = e.originalEvent.dataTransfer.files;
 		 
 			//We need to send dropped files to Server
-			handleFileUpload(files, $("#upload"));
+			handleFileUpload(reader, files);
 		}
 	});
 	$(document).on('dragenter', function (e) 
@@ -63,8 +64,18 @@ $(document).ready(function ()
 	{
 		if (uploading)
 		{
-			alert("Not yet supported!");
+			document.getElementById('upload-dialog').click();
 		}
+	});
+	$("#uploadlink").on('click', function (e)
+	{
+		if (uploading)
+		{
+			document.getElementById('upload-dialog').click();
+		}
+	});
+	$("#upload-dialog").change(function (e) {
+		handleFileUpload(reader, e.target.files);		
 	});
 	
 	var url = $(location).attr('href');
@@ -222,37 +233,21 @@ $(document).ready(function ()
 			}
 		});
 	}
-	
-	$("#download").click(function () {
-		$.ajax({
-			url: "/d/download"
-		});
-	});
-	
-	//$("#page").colResizable({ liveDrag:true });
 });
-function handleFileUpload(files,obj)
-{
-   for (var i = 0; i < files.length; i++) 
-   {
-   		//console.log(files[i]);
-        var fd = new FormData();
-	    var uploadURL = "/d/upload";
-		fd.append('file', files[i]);
-	    $.ajax({
-	        url: uploadURL,
-	        type: "POST",
-	        contentType: "application/x-www-form-urlencoded; charset=utf-8",
-	        processData: false,
-	        data: fd
-	    });
-   }
-}
 
-/*function handleFileUpload(files, obj)
+function handleFileUpload(reader, files) // TODO: validate file
 {
-   for (var i = 0; i < files.length; i++) 
-   {
-        delivery.send(files[i]);
-   }
-}*/
+	var thisfile = null;
+	reader.onload = function(e) {
+		socket.emit('make-file', thisfile.name, e.target.result);	
+	}
+	for (var i = 0; i < files.length; i++)
+	{
+		thisfile = files[i];
+		reader.readAsText(files[i]);
+	}
+}
+function handleFileDownload(files)
+{
+	
+}

@@ -12,7 +12,6 @@
 	<body>
 		<script src="http://code.jquery.com/jquery.js"></script>
 		<script src="/public/js/bootstrap.min.js"></script>
-		<script scr="/public/delivery.js"></script>
 		<script src="/public/ace/src/ace.js"></script>
 		<script async src="/public/ace/src/mode-haskell.js"></script>
 		<script async src="/public/ace/src/mode-abap.js"></script>
@@ -136,17 +135,19 @@
 						</div>
 						<div class="col-md-offset-1 col-sm-7 col-md-7">
 							<form class="navbar-form" role="search">
-								<div class="input-group">
-									<input type="text" class="form-control" placeholder="Search..." name="srch-term" id="srch-term">
-									<div class="input-group-btn">
-										<button class="btn btn-default"><i class="glyphicon glyphicon-search"></i></button>
+								<fieldset disabled>
+									<div class="input-group">
+										<input type="text" class="form-control" placeholder="Search..." name="srch-term" id="srch-term">
+										<div class="input-group-btn">
+											<button class="btn btn-default"><i class="glyphicon glyphicon-search"></i></button>
+										</div>
 									</div>
-								</div>
+								</fieldset>
 							</form>
 						</div>
 						<div class="pull-right">
 							<div class="btn-group pull-right">
-								<button id="sync" type="button" class="btn btn-success navbar-btn"><i class="glyphicon glyphicon-refresh"></i> Sync</button>
+								<button id="sync" type="button" class="btn btn-success navbar-btn" disabled><i class="glyphicon glyphicon-refresh"></i> Sync</button>
 							</div>
 						</div>
 					</div>
@@ -154,14 +155,23 @@
 			</tr>
 			<tr class="row-main">
 				<td class="left box">
-					<div id="leftbox">
-						<div class="super-select box-element">
-							<div class="item add-file selected"><span class="glyphicon glyphicon-plus-sign"></span> Add file...</div>
-						</div>
-						<div id="upload">
-							<p id="upload-text">Drag & drop or <a id="choosefile">choose file</a> to upload<p>
-						</div>
-					</div>
+					<table id="leftbox">
+						<tr class="box-element">
+							<td>
+								<div class="super-select box-element scrollable">
+									<div class="item add-file selected"><span class="glyphicon glyphicon-plus-sign"></span> Add file...</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<table id="upload">
+									<input type="file" id="upload-dialog" name="upload" class="invisible-element" />
+									<td id="upload-text">Drag & drop or <a id="choosefile">choose file</a> to upload</td>
+								</table>
+							</td>
+						</tr>
+					</table>
 				</td>
 				<td class="box">
 					<div class="box-element">
@@ -176,7 +186,7 @@
 							<div id="start-text">
 								<div id="empty">
 									<h1>You don't have any files yet</h1><br />
-									<p><a>Upload a file</a> or copy and paste your code to get started.</p><br />
+									<p><a id="uploadlink" class="pointing">Upload a file</a> or copy and paste your code to get started.</p><br />
 								</div>
 								<div id="notempty" class="invisible-element">
 									<h1>Add file</h1><br />
