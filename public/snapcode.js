@@ -139,7 +139,7 @@ $(document).ready(function ()
 			for (var i = 0; i < files.length; i++)
 			{
 				var newid = files[i].replace(" ", "_");
-				$(".super-select").prepend("<div class=\"item\" id=\"" + newid + "\"><span class=\"glyphicon glyphicon-file\"></span> " + files[i] + "</div>");
+				$(".super-select").prepend("<div class=\"item fillx\" id=\"" + newid + "\"><span class=\"glyphicon glyphicon-file\"></span> " + files[i] + "</div>");
 				//console.log("#" + newid);
 				$(".item#" + newid.replace(".", "\\.")).click(function ()
 				{

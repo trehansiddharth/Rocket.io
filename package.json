@@ -1,7 +1,7 @@
 {
         "name": "Snapcode",
         "description": "Code here, deploy anywhere",
-        "version": "0.0.3-5",
+        "version": "0.0.4",
         "dependencies": {
                 "express": "3.x",
                 "socket.io-client": "~0.9.6",

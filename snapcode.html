@@ -125,13 +125,13 @@
 		<script src="/public/snapcode.js"></script>
 		<script src="/socket.io/socket.io.js"></script>
 		<script async src="/public/ace/src/ext-modelist.js"></script>
-		<table id="page">
+		<table id="page" class="fillx filly">
 			<tr class="row-navbar">
 				<td colspan="3" class="navbar navbar-static-top navbar-inverse navbar-default">
 					<div class="navbar-inner">
 						<div class="float-left">
 							<ul class="nav navbar-nav">
-								<li id="brand" class="pointing"><a>Snapcode</a></li>
+								<li><a id="brand" class="pointing">Snapcode</a></li>
 							<ul>
 						</div>
 						<div class="col-md-offset-1 col-sm-7 col-md-7">
@@ -165,55 +165,61 @@
 					</div>
 				</td>
 			</tr>
-			<tr class="row-main">
-				<td class="left box">
-					<table id="leftbox">
-						<tr class="box-element">
+			<tr class="filly">
+				<td class="left box filly">
+					<table id="leftbox" class="filly">
+						<tr class="fillx filly">
 							<td>
-								<div class="super-select box-element scrollable">
-									<div class="item add-file selected"><span class="glyphicon glyphicon-plus-sign"></span> Add file...</div>
+								<div class="super-select fillx filly scrollable">
+									<div class="item add-file selected fillx"><span class="glyphicon glyphicon-plus-sign"></span> Add file...</div>
 								</div>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<table id="upload">
+								<table id="upload" class="fillx">
 									<input type="file" id="upload-dialog" name="upload" class="invisible-element" />
-									<td id="upload-text">Drag & drop or <a id="choosefile">choose file</a> to upload</td>
+									<td id="upload-text" class="centery">Drag & drop or <a id="choosefile">choose file</a> to upload</td>
 								</table>
 							</td>
 						</tr>
 					</table>
 				</td>
-				<td class="box">
-					<div class="box-element scrollable">
-						<div id="editor" class="box-element invisible-element">
-					
+				<td class="filly">
+					<div class="fillx filly scrollable">
+						<div id="editor" class="fillx filly invisible-element">
+							
 						</div>
-						<div id="start" class="invisible-element">
-							<div id="alpha" class="alert alert-warning alert-dismissable">
-								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-								<strong>Warning!</strong> Snapcode is not yet stable! You can report bugs <a href="https://github.com/trehansiddharth/snapcode/issues" target="_blank" class="alert-link">by clicking this link</a>.
-							</div>
-							<div id="start-text">
-								<div id="empty">
-									<h1>You don't have any files yet</h1><br />
-									<p><a id="uploadlink" class="pointing">Upload a file</a> or copy and paste your code to get started.</p><br />
-								</div>
-								<div id="notempty" class="invisible-element">
-									<h1>Add file</h1><br />
-								</div>
-								<textarea id="cpfile" class="form-control" rows="9" placeholder="Copy & paste your code here (leave empty to create a blank file)"></textarea> <br />
-								<form class="form-inline">
-									<input id="filename" type="text" class="form-control" placeholder="File name"></input>
-								</form> <br />
-								<button id="makeproject" type="button" class="btn btn-success btn-lg">Add file to project</button>
-							</div>
-						</div>
+						<table id="start" class="invisible-element fillx filly">
+							<tr>
+								<td>
+									<div id="alpha" class="alert alert-warning alert-dismissable">
+										<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+										<strong>Warning!</strong> Snapcode is not yet stable! You can report bugs <a href="https://github.com/trehansiddharth/snapcode/issues" target="_blank" class="alert-link">by clicking this link</a>.
+									</div>
+								</td>
+							</tr>
+							<tr id="start-text" class="filly">
+								<td class="fillx filly">
+									<div id="empty">
+										<h1>You don't have any files yet</h1><br />
+										<p><a id="uploadlink" class="pointing">Upload a file</a> or copy and paste your code to get started.</p><br />
+									</div>
+									<div id="notempty" class="invisible-element">
+										<h1>Add file</h1><br />
+									</div>
+									<textarea id="cpfile" class="form-control centerx" rows="9" placeholder="Copy & paste your code here (leave empty to create a blank file)"></textarea> <br />
+									<form class="form-inline">
+										<input id="filename" type="text" class="form-control" placeholder="File name"></input>
+									</form> <br />
+									<button id="makeproject" type="button" class="btn btn-success btn-lg">Add file to project</button>
+								</td>
+							</tr>
+						</table>
 					</div>
 				</td>
-				<td class="right box">
-					<table id="chatbox">
+				<td class="right box filly">
+					<table id="chatbox" class="fillx filly">
 						<tr>
 							<td id="onlinebox">
 								<strong>Now online:</strong>
@@ -222,9 +228,9 @@
 								</div>
 							</td>
 						</tr>
-						<tr class="mainrow">
-							<td id="stream">
-								<div id="substream" class="scrollable"></div>
+						<tr class="filly">
+							<td id="stream" class="fillx">
+								<div id="substream" class="scrollable fillx filly"></div>
 							</td>
 						</tr>
 						<tr>
@@ -234,7 +240,7 @@
 						</tr>
 						<tr>
 							<td>
-								<textarea id="message" type="text" rows="3"></textarea>
+								<textarea id="message" type="text" rows="3" class="fillx"></textarea>
 							</td>
 						</tr>
 					</table>
