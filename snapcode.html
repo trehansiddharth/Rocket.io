@@ -2,16 +2,17 @@
 <html lang="en">
 	<head>
 		<title>Snapcode: Code here, deploy anywhere</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link href="/public/css/bootstrap.css" rel="stylesheet" />
 		<link href="/public/css/bootstrap.min.css" rel="stylesheet" />
 		<link href="/public/snapcode.css" rel="stylesheet" />
-		<link href='http://fonts.googleapis.com/css?family=Vampiro+One' rel='stylesheet' type='text/css'>
-		<link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+		<link href='http://fonts.googleapis.com/css?family=Cuprum' rel='stylesheet' type='text/css'>
+		<link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css' />
 	</head>
 	<body>
-		<script src="http://code.jquery.com/jquery.js"></script>
+		<script src="http://code.jquery.com/jquery.min.js"></script>
 		<script src="/public/js/bootstrap.min.js"></script>
+		<script src="/public/js/jquery.cookie.js"></script>
 		<script src="/public/ace/src/ace.js"></script>
 		<script async src="/public/ace/src/mode-haskell.js"></script>
 		<script async src="/public/ace/src/mode-abap.js"></script>
@@ -130,7 +131,7 @@
 					<div class="navbar-inner">
 						<div class="float-left">
 							<ul class="nav navbar-nav">
-								<li id="brand"><a>Snapcode</a></li>
+								<li id="brand" class="pointing"><a>Snapcode</a></li>
 							<ul>
 						</div>
 						<div class="col-md-offset-1 col-sm-7 col-md-7">
@@ -146,8 +147,19 @@
 							</form>
 						</div>
 						<div class="pull-right">
-							<div class="btn-group pull-right">
-								<button id="sync" type="button" class="btn btn-success navbar-btn" disabled><i class="glyphicon glyphicon-refresh"></i> Sync</button>
+							<div class="btn-group">
+								<button id="snapsync" type="button" class="btn btn-success navbar-btn" data-toggle="dropdown">
+									<i class="glyphicon glyphicon-flash"></i> SnapSync <span class="caret"></span>
+								</button>
+								<ul class="dropdown-menu" role="menu">
+									<li><a id="sync" class="pointing"><i class="glyphicon glyphicon-refresh"></i> Sync</a></li>
+									<li><a id="build" class="pointing"><i class="glyphicon glyphicon-inbox"></i> Build</a></li>
+									<li class="divider"></li>
+									<li><a id="syncsetup" class="pointing"><i class="glyphicon glyphicon-cog"></i> Sync Settings...</a></li>
+								</ul>
+								<button id="share" type="button" class="btn btn-primary navbar-btn">
+									<i class="glyphicon glyphicon-share"></i> Share
+								</button>
 							</div>
 						</div>
 					</div>
@@ -174,7 +186,7 @@
 					</table>
 				</td>
 				<td class="box">
-					<div class="box-element">
+					<div class="box-element scrollable">
 						<div id="editor" class="box-element invisible-element">
 					
 						</div>
@@ -202,6 +214,14 @@
 				</td>
 				<td class="right box">
 					<table id="chatbox">
+						<tr>
+							<td id="onlinebox">
+								<strong>Now online:</strong>
+								<div id="online">
+									<i>No one else is online</i>
+								</div>
+							</td>
+						</tr>
 						<tr class="mainrow">
 							<td id="stream">
 								<div id="substream" class="scrollable"></div>
@@ -221,5 +241,21 @@
 				</td>
 			</tr>
 		</table>
+		<div id="installss" class="modal fade">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Introducing SnapSync</h4>
+					</div>
+					<div class="modal-body">
+						<p>SnapSync allows you to synchronize files with your computer while you are working on them from the web. You can build and run your code on your local computer without having to leave Snapcode. You can even do it from other computers!</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary"><i class="glyphicon glyphicon-cloud-download"></i> Install SnapSync</button>
+					</div>
+				</div>
+			</div>
+		</div>
 	</body>
 </html>

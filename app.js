@@ -29,6 +29,11 @@ io.sockets.on('connection', function (socket) {
 		socket.emit('update-files', files);
 		socket.emit('update-username', socket.username);
 		socket.broadcast.in(socket.projid).emit('user-online', socket.username);
+		for (i = 0; i < io.sockets.clients(projid).length; i++)
+		{
+			var client = io.sockets.clients(projid)[i];
+			socket.emit('user-online', client.username);
+		}
 		console.log(socket.username);
 	});
 	socket.on('get-file', function (filename) {

@@ -2,9 +2,17 @@ $(document).ready(function ()
 {
 	var editor = ace.edit("editor");
 	editor.setValue("", -1);
-	editor.setFontSize(15)
+	editor.setFontSize(15);
 	var uploading = true;
 	var reader = new FileReader();
+	/*if ($.cookie('visited'))
+	{
+		$("#alpha").addClass("invisible-element");
+	}
+	else
+	{
+		$.cookie('visited', 'true', { expires: 4, path: '/' });
+	}*/
 	$("#upload").on('dragenter', function (e) 
 	{
 		if (uploading)
@@ -87,13 +95,6 @@ $(document).ready(function ()
 		var hostid = parsed[2];
 		
 		socket = io.connect("http://" + hostid);
-		
-		/*socket.on('connect', function () {
-			console.log(require("delivery"));
-			delivery = new require("delivery/lib/client").Delivery(socket);
-		});*/
-		
-		//console.log(hostid);
 	
 		$(".add-file").click(function ()
 		{
@@ -207,12 +208,27 @@ $(document).ready(function ()
 			$("#substream").scrollTop($("#substream")[0].scrollHeight);
 		});
 		
+		var onlyyou = true;
+		
 		socket.on('user-online', function(username) {
-			
+			if (username != myname)
+			{
+				if (onlyyou)
+				{
+					$("#online").empty();
+					onlyyou = false;
+				}
+				$("#online").append("<p id=\"" + username.replace(" ", "_") + "\"class=\"green\"><i class=\"glyphicon glyphicon-user\"></i> " + username + "</p>");
+			}
 		});
 		
 		socket.on('user-offline', function(username) {
-		
+			$("p#" + username.replace(" ", "_")).remove();
+			if ($('#online').is(':empty'))
+			{
+				$("#online").append("<i>No one else is online</i>");
+				onlyyou = true;
+			}
 		});
 		
 		editor.on('change', function (e) {
@@ -231,6 +247,35 @@ $(document).ready(function ()
 				socket.emit('send-chat', $('#message').val());
 				$('#message').val('');
 			}
+		});
+		
+		var syncing = false;
+		var syncsocket = null;
+		try
+		{
+			syncsocket = io.connect("http://localhost:9000");
+			syncing = true;
+		}
+		catch (err)
+		{
+			syncing = false;
+		}
+		
+		syncsocket.emit("update-build-cmd", "date");
+		
+		$("#build").on('click', function () {
+			syncsocket.emit("build");
+		});
+		
+		$("#snapsync").on('click', function () {
+			$("#installss").modal();
+		});
+		
+		syncsocket.on("build-stderr", function (data) {
+			console.log("stderr: " + data);
+		});
+		syncsocket.on("build-stdout", function (data) {
+			console.log("stdout: " + data);
 		});
 	}
 });
