@@ -1,0 +1,96 @@
+/* CSS declarations go here */
+html, body {
+	height: 100%;
+	width: 100%;
+	margin: 0px;
+	position: absolute;
+	padding: 0px;
+	/*overflow: hidden;*/
+	overflow-x: hidden;
+}
+/*#page {
+	padding: 0px;
+	margin: 0px;
+	/*margin-top: -48px;
+	padding-top: 48px;*/
+	/*-moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}*/
+#cpfile
+{
+	width: 700px;
+	font-size: 1em;
+}
+div.scrollable {
+    overflow: auto;
+    position: relative;
+    /*border: solid;*/
+}
+#filename {
+	width: 700px;
+}
+#brand {
+	font-size: 3em;
+	font-family: 'Cuprum', sans-serif;
+	font-style: italic;
+}
+.invisible-element {
+	display: none !important;
+}
+#start {
+	font-size: 1em;
+	height: 100%;
+}
+#start-text {
+	height: 100vh;
+	background-color: #F0F0E8;
+	color: gray;
+	vertical-align: middle;
+	text-align: center;
+}
+#warning-glyph {
+	font-size: 3em;
+}
+#file-dialog {
+	width: 300px;
+	height: 170px;
+	text-align: center;
+	margin-top: 0 auto;
+}
+#slogan {
+	font-style: italic;
+}
+#trending {
+	text-align: center;
+	margin: 0px;
+	padding: 0px;
+}
+.pointing {
+	cursor: pointer;
+}
+.fillx {
+	width: 100%;
+}
+.filly {
+	height: 100%;
+}
+.centerx {
+	margin-left: auto;
+	margin-right: auto;
+}
+.centery {
+	margin-top: auto;
+	margin-bottom: auto;
+}
+table {
+	border: none;
+}
+td {
+	padding: 0;
+	margin: 0;
+}
+tr {
+	padding: 0;
+	margin: 0;
+}

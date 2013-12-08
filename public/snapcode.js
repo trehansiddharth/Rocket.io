@@ -163,21 +163,27 @@ $(document).ready(function ()
 		});
 		
 		var inserted = false;
+		var changed = false;
 		
 		socket.on('result-contents', function (contents) {
 			inserted = true;
 			editor.setValue(contents, -1);
 			inserted = false;
+			changed = false;
 		});
 		
 		socket.on('file-change', function (change) {
 			inserted = true;
 			editor.getSession().getDocument().applyDeltas([change]);
 			inserted = false;
+			changed = true;
 		});
 		
 		socket.on('get-whole-file', function () {
-			socket.emit('file-save', editor.getSession().getValue());
+			if (changed)
+			{
+				socket.emit('file-save', editor.getSession().getValue());
+			}
 		});
 		
 		var myname = null;
@@ -235,6 +241,7 @@ $(document).ready(function ()
 			if (!inserted)
 			{
 				socket.emit('file-change', e.data);
+				changed = true;
 			}
 		});
 		

@@ -78,6 +78,20 @@ io.sockets.on('connection', function (socket) {
 	socket.on('send-chat', function (message) {
 		io.sockets.in(socket.projid).emit('chat', socket.username, message);
 	});
+	socket.on('make-project', function (filename, contents) {
+		var redirect_url = ""; //format : /p/sdfsdfsdfsd
+	
+		while (url_exists(redirect_url))
+		{
+			redirect_url = random_url();
+		}
+		fs.mkdirSync('.' + redirect_url);
+		fs.mkdirSync('.' + redirect_url + '/build');
+		var path = "." + redirect_url + "/" + filename;
+		fs.openSync(path, "w");
+		fs.writeFileSync(path, contents);
+		socket.emit('project-ready', redirect_url);
+	});
 });
 var tid = setInterval(function () {
 	for (var i = 0; i < opendocuments.length; i++)
@@ -114,7 +128,9 @@ app.get('/', function(request, response) {
 		redirect_url = random_url();
 	}
 	response.redirect(redirect_url);
-	//response.sendfile("./index.html");
+});
+app.get('/alternate', function(request, response) {
+	response.sendfile("./index.html");
 });
 
 app.use(function(req, res, next) {
