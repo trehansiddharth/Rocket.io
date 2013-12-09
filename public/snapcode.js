@@ -1,5 +1,4 @@
-$(document).ready(function ()
-{
+$(document).ready(function () {
 	var editor = ace.edit("editor");
 	editor.setValue("", -1);
 	editor.setFontSize(15);
@@ -256,26 +255,18 @@ $(document).ready(function ()
 			}
 		});
 		
-		var syncing = false;
-		var syncsocket = null;
-		try
-		{
-			syncsocket = io.connect("http://localhost:9000");
+		syncing = false;
+		syncsocket = io.connect("http://localhost:9000");
+		
+		syncsocket.on('connection-ok', function () {
+			console.log('connection-ok');
 			syncing = true;
-		}
-		catch (err)
-		{
-			syncing = false;
-		}
+		});
 		
 		syncsocket.emit("update-build-cmd", "date");
 		
 		$("#build").on('click', function () {
 			syncsocket.emit("build");
-		});
-		
-		$("#snapsync").on('click', function () {
-			$("#installss").modal();
 		});
 		
 		syncsocket.on("build-stderr", function (data) {
@@ -302,4 +293,17 @@ function handleFileUpload(reader, files) // TODO: validate file
 function handleFileDownload(files)
 {
 	
+}
+function opensync()
+{
+	console.log(syncing);
+	if (syncing)
+	{
+		window.open($(location).attr('href').replace("/p/", "/s/"));
+	}
+	else
+	{
+		$("#installss").modal();
+	}
+	return syncing;
 }

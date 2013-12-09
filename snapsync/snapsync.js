@@ -5,6 +5,7 @@ var fs	= require("fs"),
 var io = si.listen(9000);
 
 io.sockets.on('connection', function (socket) {
+	socket.emit('connection-ok');
 	socket.on('create', function (projid) {
 		socket.projid = projid;
 		socket.join(projid);
