@@ -5,8 +5,8 @@ var http		= require("http"),
 	connect 	= require("connect"),
 	JSZip		= require("node-zip"),
 	mongodb		= require("mongodb");
+	document	= require("./document/document");
 
-var snapdb = null;
 var projects = null;
 
 config = fs.readFileSync('./config.ignore').toString().split("\n");
@@ -19,10 +19,7 @@ mongodb.MongoClient.connect(mongodb_uri, function (err, db) {
 	}
 	else
 	{
-		snapdb = db;
 		projects = db.collection("projects");
-		var proj1 = { projid : "3ojfij3984" }
-		
 	}
 });
 
@@ -31,6 +28,7 @@ var port = parseInt(process.env.PORT, 10) || 8080;
 var app = express();
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
+io.set('log level', 1)
 
 var opendocuments = [];
 io.sockets.on('connection', function (socket) {
@@ -51,28 +49,24 @@ io.sockets.on('connection', function (socket) {
 		});
 	});
 	socket.on('get-file', function (filename) {
-		console.log(socket.projid + "/" + filename);
-		read_file(socket.projid, filename, function (contents) {
-			socket.emit('result-contents', contents);
-			if (socket.document != null)
-			{
-				socket.emit('get-whole-file');
-				socket.leave(socket.document);
-			}
-			socket.document = socket.projid + "/" + filename;
-			socket.join(socket.document);
-			if (!contains(opendocuments, socket.document))
-			{
-				opendocuments.push(socket.document);
-			}
-		});
+		socket.document = socket.projid + "/" + filename;
+		socket.join(socket.document);
+		var doc = find_document(socket.document);
+		if (doc)
+		{
+			socket.emit('result-contents', doc["document"].getValue());
+		}
+		else
+		{
+			read_file(socket.projid, filename, function (contents) {
+				insert_document(socket.document, contents);
+				socket.emit('result-contents', contents);
+			});
+		}
 	});
 	socket.on('file-change', function(change) {
+		find_document(socket.document)["document"].applyDeltas([change]);
 		socket.broadcast.in(socket.document).emit('file-change', change);
-	});
-	socket.on('file-save', function (contents) {
-		doc_parts = socket.document.split("/");
-		write_file(doc_parts[0], doc_parts[1], contents, function (err, count) { });
 	});
 	socket.on('disconnect', function () {
 		if (socket.document != null)
@@ -83,9 +77,7 @@ io.sockets.on('connection', function (socket) {
 		io.sockets.in(socket.projid).emit('user-offline', socket.username);
 	});
 	socket.on('make-file', function (filename, contents) {
-		console.log(socket.projid + "/" + filename);
 		create_file(socket.projid, filename, contents, function (err, count) {
-			console.log(count);
 			if (err)
 			{
 				throw err;
@@ -109,20 +101,28 @@ io.sockets.on('connection', function (socket) {
 	});
 });
 var tid = setInterval(function () {
-	for (var i = 0; i < opendocuments.length; i++)
+	var i = opendocuments.length;
+	while (i--)
 	{
-		var document = opendocuments[i];
-		var clients = io.sockets.clients(document);
-		if (clients.length > 0)
+		var docid = opendocuments[i]["id"];
+		var clients = io.sockets.clients(docid);
+		if (clients.length == 0)
 		{
-			clients[0].emit('get-whole-file');
-		}
-		else
-		{
-			opendocuments.splice(opendocuments.indexOf(document), 1);
+			var projid = docid.split("/")[0];
+			var filename = docid.split("/")[1];
+			write_file(projid, filename, opendocuments[i]["document"].getValue(), function (err, count) {
+				if (err)
+				{
+					throw err;
+				}
+				else
+				{
+					opendocuments.splice(i, 1);
+				}
+			});
 		}
 	}
-}, 3000);
+}, 10000);
 
 app.configure(function () {
   app.use(connect.bodyParser());
@@ -154,7 +154,7 @@ app.use(function(req, res, next) {
 			}
 			else
 			{
-				var new_project = { projid : url.replace("/p/", ""), files : [], testing: true };
+				var new_project = { projid : url.replace("/p/", ""), files : [], testing: false };
 				projects.insert(new_project, { w : 1 }, function (err, result) {
 					res.sendfile('./snapcode.html');
 				});
@@ -268,4 +268,41 @@ contains = function (a, obj) {
        }
     }
     return false;
+}
+is_open = function (document) {
+	var i = opendocuments.length;
+	while (i--)
+	{
+		if (opendocuments[i]["id"] === document)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+remove_document = function (document) {
+	var i = opendocuments.length;
+	while (i--)
+	{
+		if (opendocuments[i]["id"] === document)
+		{
+			opendocuments.splice(i, 1);
+			return true;
+		}
+	}
+	return false;
+}
+find_document = function (document) {
+	var i = opendocuments.length;
+	while (i--)
+	{
+		if (opendocuments[i]["id"] === document)
+		{
+			return opendocuments[i];
+		}
+	}
+	return null;
+}
+insert_document = function (docid, contents) {
+	opendocuments.push({ id: docid, document: new document.Document(contents) });
 }

@@ -16530,6 +16530,7 @@ dom.importCssString(exports.cssText, exports.cssClass);
 });
 ;
             (function() {
+            	try {
                 window.require(["ace/ace"], function(a) {
                     a && a.config.init();
                     if (!window.ace)
@@ -16537,5 +16538,10 @@ dom.importCssString(exports.cssText, exports.cssClass);
                     for (var key in a) if (a.hasOwnProperty(key))
                         ace[key] = a[key];
                 });
+                }
+                catch (err)
+                {
+                
+                }
             })();
         
