@@ -148,7 +148,7 @@ $(document).ready(function () {
 			for (var i = 0; i < files.length; i++)
 			{
 				var filename = files[i].replace(" ", "_");
-				$(".super-select").prepend("<div class=\"item fillx\" id=\"" + filename + "\"><span class=\"glyphicon glyphicon-file\"></span> " + files[i] + "</div>");
+				$(".super-select").prepend(html_file(files[i]));
 				socket.emit('get-session', filename);
 				$(".item#" + filename.replace(".", "\\.")).click(function ()
 				{
@@ -195,7 +195,7 @@ $(document).ready(function () {
 		});
 		
 		socket.on('update-username', function (username) {
-			$("#username").append(" <span class=\"tool-text\">" + username + "</span>");
+			$("#username").append(html_username(username));
 			myname = username;
 		});
 		
@@ -211,7 +211,7 @@ $(document).ready(function () {
 				{
 					talkerclass = "talker-notme";
 				}
-				$("#substream").append("<div class=\"well well-sm chatmsg\"><div class=\"talker " + talkerclass + "\">" + username + "</div><div class=\"" + talkerclass + " chat-text\"></div></div>");
+				$("#substream").append(html_chat(talkerclass, username));
 				nowtalking = username;
 			}
 			$(".chat-text").last().append(message.replace("<", "&lt;").replace(">", "&gt;") + "<br />");
@@ -228,7 +228,7 @@ $(document).ready(function () {
 					$("#online").empty();
 					onlyyou = false;
 				}
-				$("#online").append("<p id=\"" + username.replace(" ", "_") + "\"class=\"green\"><i class=\"glyphicon glyphicon-user\"></i> " + username + "</p>");
+				$("#online").append(html_user(username));
 			}
 		});
 		
@@ -260,6 +260,8 @@ $(document).ready(function () {
 				$('#message').val('');
 			}
 		});
+		
+		// SnapSync integration
 		
 		syncing = false;
 		syncsocket = io.connect("http://localhost:9000");
@@ -336,4 +338,21 @@ function fetch_session(filename)
 		}
 	}
 	return null;
+}
+
+function html_file(filename)
+{
+	return "<div class=\"item fillx\" id=\"" + filename.replace(" ", "_") + "\"><span class=\"glyphicon glyphicon-file\"></span> " + filename + "</div>";
+}
+function html_username(username)
+{
+	return " <span class=\"tool-text\">" + username + "</span>";
+}
+function html_chat(talkerclass, username)
+{
+	return "<div class=\"well well-sm chatmsg\"><div class=\"talker " + talkerclass + "\">" + username + "</div><div class=\"" + talkerclass + " chat-text\"></div></div>";
+}
+function html_user(username)
+{
+	return "<p id=\"" + username.replace(" ", "_") + "\"class=\"green\"><i class=\"glyphicon glyphicon-user\"></i> " + username + "</p>";
 }
