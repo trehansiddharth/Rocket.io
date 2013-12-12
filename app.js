@@ -53,8 +53,8 @@ io.sockets.on('connection', function (socket) {
 		socket.join(socket.document);
 		if (!find_document(socket.document))
 		{
-			read_file(socket.projid, filename, function (contents) {
-				insert_document(socket.document, contents);
+			read_file(socket.projid, filename, function (contents, syncfile) {
+				insert_document(socket.document, contents, syncfile);
 				console.log("new file added: " + filename);
 			});
 		}
@@ -64,12 +64,12 @@ io.sockets.on('connection', function (socket) {
 		var doc = find_document(document);
 		if (doc)
 		{
-			socket.emit('push-session', filename, doc["document"].getValue());
+			socket.emit('push-session', filename, doc["document"].getValue(), doc["syncfile"]);
 		}
 		else
 		{
-			read_file(socket.projid, filename, function (contents) {
-				socket.emit('push-session', filename, contents);
+			read_file(socket.projid, filename, function (contents, syncfile) {
+				socket.emit('push-session', filename, contents, syncfile);
 			});
 		}
 	});
@@ -250,7 +250,7 @@ list_files = function (projid, cb) {
 	});
 }
 create_file = function (projid, filename, contents, cb) {
-	projects.update({ projid: projid }, {$push: { files: { name: filename, contents: contents}}}, cb);
+	projects.update({ projid: projid }, {$push: { files: { name: filename, contents: contents, syncfile: null}}}, cb);
 }
 read_file = function (projid, filename, cb) {
 	projects.find({projid: projid}, {files: {$elemMatch: {name: filename}}}).toArray(function (err, items) {
@@ -260,7 +260,7 @@ read_file = function (projid, filename, cb) {
 		}
 		else
 		{
-			cb(items[0]["files"][0]["contents"]);
+			cb(items[0]["files"][0]["contents"], items[0]["files"][0]["syncfile"]);
 		}
 	});
 }
@@ -313,21 +313,6 @@ find_document = function (document) {
 	}
 	return null;
 }
-insert_document = function (docid, contents) {
-	opendocuments.push({ id: docid, document: new document.Document(contents) });
-}
-
-push_session = function (socket, filename) {
-	var document = socket.projid + "/" + filename;
-	var doc = find_document(document);
-	if (doc)
-	{
-		socket.emit('push-session', filename, doc["document"].getValue());
-	}
-	else
-	{
-		read_file(socket.projid, filename, function (contents) {
-			socket.emit('push-session', filename, contents);
-		});
-	}
+insert_document = function (docid, contents, syncfile) {
+	opendocuments.push({ id: docid, document: new document.Document(contents), syncfile: syncfile });
 }

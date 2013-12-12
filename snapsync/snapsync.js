@@ -20,7 +20,12 @@ io.sockets.on('connection', function (socket) {
 		socket.cwd = new_cwd;
 	});
 	socket.on('update-file', function (path, contents) {
-		fs.writeFile(path, contents);
+		fs.writeFile(path, contents, function (err) {
+			if (err)
+			{
+				socket.emit('error', 2, err); // 2: write file failed
+			}
+		});
 	});
 	socket.on('build', function () {
 		if (socket.build_cmd !== null)
@@ -38,7 +43,7 @@ io.sockets.on('connection', function (socket) {
 		}
 		else
 		{
-			socket.emit('error', 1); // 1: no build command specified
+			socket.emit('error', 1, "no build command specified"); // 1: no build command specified
 		}
 	});
 	socket.on('console-start', function () {

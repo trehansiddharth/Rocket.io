@@ -174,14 +174,18 @@ $(document).ready(function () {
 			}
 		});
 		
-		socket.on('push-session', function (filename, contents) {
+		socket.on('push-session', function (filename, contents, syncfile) {
 			var modename = require("ace/ext/modelist").getModeForPath(filename).mode;
 			var modeobj = require(modename).Mode;
-			sessions.push({filename : filename, session: ace.createEditSession(contents, new modeobj()) });
+			sessions.push({filename : filename, session: ace.createEditSession(contents, new modeobj()), syncfile: syncfile });
 			if (currentfile === filename)
 			{
 				editor.setSession(fetch_session(filename)["session"]);
 			}
+		});
+		
+		socket.on("delete-file", function (filename) {
+			// code to delete html element goes here
 		});
 		
 		socket.on('file-change', function (filename, change) {
@@ -263,22 +267,30 @@ $(document).ready(function () {
 		syncsocket.on('connection-ok', function () {
 			console.log('connection-ok');
 			syncing = true;
-		});
-		
-		syncsocket.emit("update-build-cmd", "date");
-		
-		$("#build").on('click', function () {
-			syncsocket.emit("build");
-		});
-		
-		syncsocket.on("build-stderr", function (data) {
-			console.log("stderr: " + data);
-		});
-		syncsocket.on("build-stdout", function (data) {
-			console.log("stdout: " + data);
+			setupsync();
 		});
 	}
 });
+
+function setupsync()
+{
+	//syncsocket.emit("update-build-cmd", "date");
+	
+	/*$("#build").on('click', function () {
+		syncsocket.emit("build");
+	});*/
+	
+	syncsocket.on("error", function (value, err) {
+		alert("Error with SnapSync: error number " + value + ", " + err);
+	});
+	
+	/*syncsocket.on("build-stderr", function (data) {
+		console.log("stderr: " + data);
+	});
+	syncsocket.on("build-stdout", function (data) {
+		console.log("stdout: " + data);
+	});*/
+}
 
 function handleFileUpload(reader, files) // TODO: validate file
 {
@@ -298,10 +310,13 @@ function handleFileDownload(files)
 }
 function opensync()
 {
-	console.log(syncing);
 	if (syncing)
 	{
-		window.open($(location).attr('href').replace("/p/", "/s/"));
+		//window.open($(location).attr('href').replace("/p/", "/s/"));
+		for (i = 0; i < sessions.length; i++)
+		{
+			syncsocket.emit("update-file", "./" + sessions[i]["filename"], sessions[i]["session"].getDocument().getValue());
+		}
 	}
 	else
 	{

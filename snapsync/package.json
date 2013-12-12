@@ -4,6 +4,6 @@
         "description": "SnapSync plugin for Snapcode",
         "dependencies": {
                 "socket.io-client": "~0.9.6",
-                "socket.io": "~0.9.6",
-        },
+                "socket.io": "~0.9.6"
+        }
 }
