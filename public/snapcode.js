@@ -1,3 +1,5 @@
+sessions = [];
+
 $(document).ready(function () {
 	var editor = ace.edit("editor");
 	editor.setValue("", -1);
@@ -105,6 +107,10 @@ $(document).ready(function () {
 		
 		var gotofile = true;
 		var hasfiles = false;
+		var inserted = false;
+		var currentfile = null;
+		var myname = null;
+		var nowtalking = null;
 		
 		$("#makeproject").click(function ()
 		{
@@ -115,6 +121,10 @@ $(document).ready(function () {
 				gotofile = true;
 				$("#filename").val("");
 				$("#cpfile").val("");
+			}
+			else if (fetch_session($("#filename").val()))
+			{
+				alert("A file of this name already exists. You must specify a different name.");
 			}
 			else
 			{
@@ -137,52 +147,53 @@ $(document).ready(function () {
 			}
 			for (var i = 0; i < files.length; i++)
 			{
-				var newid = files[i].replace(" ", "_");
-				$(".super-select").prepend("<div class=\"item fillx\" id=\"" + newid + "\"><span class=\"glyphicon glyphicon-file\"></span> " + files[i] + "</div>");
-				//console.log("#" + newid);
-				$(".item#" + newid.replace(".", "\\.")).click(function ()
+				var filename = files[i].replace(" ", "_");
+				$(".super-select").prepend("<div class=\"item fillx\" id=\"" + filename + "\"><span class=\"glyphicon glyphicon-file\"></span> " + files[i] + "</div>");
+				socket.emit('get-session', filename);
+				$(".item#" + filename.replace(".", "\\.")).click(function ()
 				{
+					var thisfile = $(this).attr("id");
 					$(".item").removeClass("selected");
 					$(this).addClass("selected");
-					//uploading = false;
-					socket.emit('get-file', $(this).attr('id'));
+					socket.emit('set-file', thisfile);
+					currentfile = thisfile;
+					var sess = fetch_session(thisfile);
+					if (sess !== null)
+					{
+						editor.setSession(sess["session"]);
+					}
 					$("#editor").removeClass("invisible-element");
 					$("#start").addClass("invisible-element");
-					var modename = require("ace/ext/modelist").getModeForPath($(this).attr('id')).mode;
-					//console.log(modename);
-					var modeobj = require(modename).Mode;
-					editor.getSession().setMode(new modeobj());
 				});
 				if (i == files.length - 1 && gotofile)
 				{
-					$(".item#" + newid.replace(".", "\\.")).trigger("click");
+					$(".item#" + filename.replace(".", "\\.")).trigger("click");
 					gotofile = false;
+					console.log("sdf");
 				}
 			}
 		});
 		
-		var inserted = false;
-		
-		socket.on('result-contents', function (contents) {
-			inserted = true;
-			editor.setValue(contents, -1);
-			inserted = false;
+		socket.on('push-session', function (filename, contents) {
+			var modename = require("ace/ext/modelist").getModeForPath(filename).mode;
+			var modeobj = require(modename).Mode;
+			sessions.push({filename : filename, session: ace.createEditSession(contents, new modeobj()) });
+			if (currentfile === filename)
+			{
+				editor.setSession(fetch_session(filename)["session"]);
+			}
 		});
 		
-		socket.on('file-change', function (change) {
+		socket.on('file-change', function (filename, change) {
 			inserted = true;
-			editor.getSession().getDocument().applyDeltas([change]);
+			fetch_session(filename)["session"].getDocument().applyDeltas([change]);
 			inserted = false;
 		});
-		
-		var myname = null;
 		
 		socket.on('update-username', function (username) {
 			$("#username").append(" <span class=\"tool-text\">" + username + "</span>");
 			myname = username;
 		});
-		
-		var nowtalking = null;
 		
 		socket.on('chat', function(username, message) {
 			var talkerclass;
@@ -297,4 +308,16 @@ function opensync()
 		$("#installss").modal();
 	}
 	return syncing;
+}
+function fetch_session(filename)
+{
+	var i = sessions.length;
+	while (i--)
+	{
+		if (sessions[i]["filename"] === filename)
+		{
+			return sessions[i];
+		}
+	}
+	return null;
 }

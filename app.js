@@ -28,7 +28,7 @@ var port = parseInt(process.env.PORT, 10) || 8080;
 var app = express();
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
-io.set('log level', 1)
+//io.set('log level', 1)
 
 var opendocuments = [];
 io.sockets.on('connection', function (socket) {
@@ -48,25 +48,35 @@ io.sockets.on('connection', function (socket) {
 			}
 		});
 	});
-	socket.on('get-file', function (filename) {
+	socket.on('set-file', function (filename) {
 		socket.document = socket.projid + "/" + filename;
 		socket.join(socket.document);
-		var doc = find_document(socket.document);
+		if (!find_document(socket.document))
+		{
+			read_file(socket.projid, filename, function (contents) {
+				insert_document(socket.document, contents);
+				console.log("new file added: " + filename);
+			});
+		}
+	});
+	socket.on('get-session', function (filename) {
+		var document = socket.projid + "/" + filename;
+		var doc = find_document(document);
 		if (doc)
 		{
-			socket.emit('result-contents', doc["document"].getValue());
+			socket.emit('push-session', filename, doc["document"].getValue());
 		}
 		else
 		{
 			read_file(socket.projid, filename, function (contents) {
-				insert_document(socket.document, contents);
-				socket.emit('result-contents', contents);
+				socket.emit('push-session', filename, contents);
 			});
 		}
 	});
 	socket.on('file-change', function(change) {
+		console.log(socket.document);
 		find_document(socket.document)["document"].applyDeltas([change]);
-		socket.broadcast.in(socket.document).emit('file-change', change);
+		socket.broadcast.in(socket.projid).emit('file-change', socket.document.split("/")[1], change);
 	});
 	socket.on('disconnect', function () {
 		if (socket.document != null)
@@ -154,7 +164,7 @@ app.use(function(req, res, next) {
 			}
 			else
 			{
-				var new_project = { projid : url.replace("/p/", ""), files : [], testing: false };
+				var new_project = { projid : url.replace("/p/", ""), files : [], testing: true };
 				projects.insert(new_project, { w : 1 }, function (err, result) {
 					res.sendfile('./snapcode.html');
 				});
@@ -305,4 +315,19 @@ find_document = function (document) {
 }
 insert_document = function (docid, contents) {
 	opendocuments.push({ id: docid, document: new document.Document(contents) });
+}
+
+push_session = function (socket, filename) {
+	var document = socket.projid + "/" + filename;
+	var doc = find_document(document);
+	if (doc)
+	{
+		socket.emit('push-session', filename, doc["document"].getValue());
+	}
+	else
+	{
+		read_file(socket.projid, filename, function (contents) {
+			socket.emit('push-session', filename, contents);
+		});
+	}
 }
