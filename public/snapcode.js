@@ -174,10 +174,10 @@ $(document).ready(function () {
 			}
 		});
 		
-		socket.on('push-session', function (filename, contents, syncfile) {
+		socket.on('push-session', function (filename, contents) {
 			var modename = require("ace/ext/modelist").getModeForPath(filename).mode;
 			var modeobj = require(modename).Mode;
-			sessions.push({filename : filename, session: ace.createEditSession(contents, new modeobj()), syncfile: syncfile });
+			sessions.push({filename : filename, session: ace.createEditSession(contents, new modeobj()) });
 			if (currentfile === filename)
 			{
 				editor.setSession(fetch_session(filename)["session"]);
@@ -315,7 +315,8 @@ function opensync()
 		//window.open($(location).attr('href').replace("/p/", "/s/"));
 		for (i = 0; i < sessions.length; i++)
 		{
-			syncsocket.emit("update-file", "./" + sessions[i]["filename"], sessions[i]["session"].getDocument().getValue());
+			var sess = sessions[i];
+			syncsocket.emit("update-file", sessions[i]["filename"], sessions[i]["session"].getDocument().getValue());
 		}
 	}
 	else
