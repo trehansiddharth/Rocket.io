@@ -124,6 +124,8 @@ $(document).ready(function () {
 			}
 		});
 		
+		var settingsfile = null;
+		
 		socket.on('update-files', function (files) {
 			if (files.length > 0)
 			{
@@ -142,11 +144,14 @@ $(document).ready(function () {
 				var filename = files[i].replace(" ", "_");
 				$(".super-select").prepend(html_file(files[i]));
 				socket.emit('get-session', filename);
-				$(".item#" + filename.replace(".", "\\.")).click(function ()
+				$("#file-" + filename.replace(".", "\\.")).click(function ()
 				{
-					var thisfile = $(this).attr("id");
+					var that = $(this);
+					var thisfile = that.attr("id").substr(5);
+					console.log(thisfile);
 					$(".item").removeClass("selected");
-					$(this).addClass("selected");
+					$("#item-" + thisfile.replace(".", "\\.")).addClass("selected");
+					console.log("#item-" + thisfile);
 					socket.emit('set-file', thisfile);
 					currentfile = thisfile;
 					var sess = fetch_session(thisfile);
@@ -157,13 +162,37 @@ $(document).ready(function () {
 					$("#editor").removeClass("invisible-element");
 					$("#start").addClass("invisible-element");
 				});
+				$("#cog-" + filename.replace(".", "\\.")).click(function ()
+				{
+					var that = $(this);
+					var thisfile = that.attr("id").substr(4);
+					settingsfile = thisfile;
+					$("#file-name").val(thisfile);
+					if (syncing)
+					{
+						$("#sync-with").prop('disabled', false);
+						//$("#sync-with").val("syncing");
+						syncsocket.emit('get-sync', thisfile);
+					}
+					else
+					{
+						$("#sync-with").prop('disabled', true);
+						$("#sync-with").val("You need to have SnapSync installed for this to work");
+					}
+					$("#file-settings").modal();
+				});
 				if (i == files.length - 1 && gotofile)
 				{
-					$(".item#" + filename.replace(".", "\\.")).trigger("click");
+					$("#file-" + filename.replace(".", "\\.")).trigger("click");
 					gotofile = false;
-					console.log("sdf");
 				}
 			}
+			socket.emit('random-username');
+		});
+		
+		$("#file-settings-save").on("click", function () {
+			syncsocket.emit("update-sync", settingsfile, $("#sync-with").val());
+			$("#file-settings").modal('hide');
 		});
 		
 		socket.on('push-session', function (filename, contents) {
@@ -186,8 +215,13 @@ $(document).ready(function () {
 			inserted = false;
 		});
 		
+		socket.on('random-username', function (username) {
+			socket.emit('update-username', username);
+		});
+		
 		socket.on('update-username', function (username) {
 			$("#username").append(html_username(username));
+			//$("#login-username").text(username);
 			myname = username;
 		});
 		
@@ -280,6 +314,10 @@ function setupsync()
 		alert("Error with SnapSync: error number " + value + ", " + err);
 	});
 	
+	syncsocket.on('get-sync', function (filename) {
+		$("#sync-with").val(filename);
+	});
+	
 	/*syncsocket.on("build-stderr", function (data) {
 		console.log("stderr: " + data);
 	});
@@ -336,7 +374,9 @@ function fetch_session(filename)
 
 function html_file(filename)
 {
-	return "<div class=\"item fillx\" id=\"" + filename.replace(" ", "_") + "\"><span class=\"glyphicon glyphicon-file\"></span> " + filename + "</div>";
+	return "<div id=\"item-" + filename.replace(" ", "_") + "\" class=\"item fillx\"><table><td><i class=\"glyphicon glyphicon-file\"></i></td><td id=\"file-" + filename.replace(" ", "_") + "\" class=\"item-main pointing\">" + filename + "</td><td class=\"fillx\"></td><td><i id=\"cog-" + filename.replace(" ", "_") + "\" class=\"glyphicon glyphicon-cog pointing\"></i></td></table></div>";
+
+// <td><i class=\"glyphicon glyphicon-remove red pointing\"></i></td>
 }
 function html_username(username)
 {

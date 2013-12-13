@@ -37,6 +37,19 @@ io.sockets.on('connection', function (socket) {
 			}
 		});
 	});
+	socket.on('get-sync', function (filename, syncfile) {
+		fs.readFile("./projects/" + socket.projid + "/" + filename, "utf8", function (err, data) {
+			if (!err)
+			{
+				var path = data.split("\n")[0];
+				socket.emit('get-sync', path);
+			}
+			else
+			{
+				socket.emit('get-sync', '');
+			}
+		});
+	});
 	socket.on('update-file', function (filename, contents) {
 		fs.readFile("./projects/" + socket.projid + "/" + filename, "utf8", function (err, data) {
 			if (!err)

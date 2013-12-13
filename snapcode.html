@@ -133,34 +133,20 @@
 								<li><a id="brand" class="pointing">Snapcode</a></li>
 							<ul>
 						</div>
-						<div class="col-md-offset-1 col-sm-7 col-md-7">
-							<form class="navbar-form" role="search">
-								<fieldset disabled>
-									<div class="input-group">
-										<input type="text" class="form-control" placeholder="Search..." name="srch-term" id="srch-term">
-										<div class="input-group-btn">
-											<button class="btn btn-default"><i class="glyphicon glyphicon-search"></i></button>
-										</div>
-									</div>
-								</fieldset>
-							</form>
-						</div>
-						<div class="pull-right">
-							<div class="btn-group">
-								<button id="snapsync" type="button" class="btn btn-success navbar-btn" onclick="return opensync();"> <!--data-toggle="dropdown">-->
-									<i class="glyphicon glyphicon-flash"></i> SnapSync<!-- <span class="caret">--></span>
-								</button>
-								<!--<ul class="dropdown-menu" role="menu">
-									<li><a id="sync" class="pointing"><i class="glyphicon glyphicon-refresh"></i> Sync</a></li>
-									<li><a id="build" class="pointing"><i class="glyphicon glyphicon-inbox"></i> Build</a></li>
-									<li><a id="deploy" class="pointing"><i class="glyphicon glyphicon-hdd"></i> Deploy</a></li>
-									<li class="divider"></li>
-									<li><a id="syncsetup" class="pointing"><i class="glyphicon glyphicon-cog"></i> Sync Settings...</a></li>
-								</ul>-->
-								<button id="share" type="button" class="btn btn-primary navbar-btn">
-									<i class="glyphicon glyphicon-share"></i> Share
-								</button>
-							</div>
+						<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+							<ul class="nav navbar-nav navbar-right">
+								<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-flash"></i> SnapSync <b class="caret"></b></a>
+									<ul class="dropdown-menu">
+										<li><a id="sync" class="pointing" onclick="return opensync();"><i class="glyphicon glyphicon-refresh"></i> Sync</a></li>
+										<li><a id="build" class="pointing"><i class="glyphicon glyphicon-inbox"></i> Build</a></li>
+										<li><a id="deploy" class="pointing"><i class="glyphicon glyphicon-hdd"></i> Deploy</a></li>
+										<li class="divider"></li>
+										<li><a id="syncsetup" class="pointing"><i class="glyphicon glyphicon-cog"></i> Sync Settings...</a></li>
+									</ul>
+								</li>
+								<li class="dropdown"><a class="pointing"><i class="glyphicon glyphicon-user"></i> <span id="login-username">Sign in</span></b></a>
+								</li>
+							</ul>
 						</div>
 					</div>
 				</td>
@@ -171,11 +157,15 @@
 						<tr class="fillx filly">
 							<td>
 								<div class="super-select fillx filly scrollable">
-									<div class="item add-file selected fillx">
-										<span class="glyphicon glyphicon-plus-sign"></span>
-										<span>Add file...</span>
-										<span class="glyphicon glyphicon-remove-sign"></span>
-										<span class="glyphicon glyphicon-file"></span>
+									<div class="add-file item selected fillx">
+										<table>
+											<td>
+												<i class="glyphicon glyphicon-plus"></i>
+											</td>
+											<td class="item-main pointing">
+												Add file...
+											</td>
+										</table>
 									</div>
 								</div>
 							</td>
@@ -196,14 +186,6 @@
 							
 						</div>
 						<table id="start" class="invisible-element fillx filly">
-							<!--<tr>
-								<td>
-									<div id="alpha" class="alert alert-warning alert-dismissable">
-										<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-										<strong>Warning!</strong> Snapcode is not yet stable! You can report bugs <a href="https://github.com/trehansiddharth/snapcode/issues" target="_blank" class="alert-link">by clicking this link</a>.
-									</div>
-								</td>
-							</tr>-->
 							<tr id="start-text" class="filly">
 								<td class="fillx filly">
 									<div id="empty">
@@ -314,6 +296,35 @@
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-primary"><i class="glyphicon glyphicon-ok"></i> Save Settings</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="file-settings" class="modal fade">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 id="file-settings-title" class="modal-title">File Settings</h4>
+					</div>
+					<div class="modal-body">
+						<form class="form-horizontal">
+							<fieldset>
+								<label for="file-name" class="col-sm-3 col-md-3 control-label">File name</label>
+								<div class="col-sm-9 col-md-9">
+									<input type="text" class="form-control" id="file-name"></input><br />
+								</div>
+							</fieldset>
+							<fieldset>
+								<label for="sync-with" class="col-sm-3 col-md-3 control-label">Syncs with:</label>
+								<div class="col-sm-9 col-md-9">
+									<input type="text" class="form-control" id="sync-with"></input><br />
+								</div>
+							</fieldset>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button id="file-settings-save" type="button" class="btn btn-primary"><i class="glyphicon glyphicon-ok"></i> Save</button>
 					</div>
 				</div>
 			</div>

@@ -33,20 +33,29 @@ var io = require('socket.io').listen(server);
 var opendocuments = [];
 io.sockets.on('connection', function (socket) {
 	socket.on('create', function (projid) {
-		socket.username = random_username();
 		socket.projid = projid;
 		socket.document = null;
 		socket.join(projid);
 		list_files(projid, function (files) {
-			socket.emit('update-files', files);
-			socket.emit('update-username', socket.username);
-			socket.broadcast.in(socket.projid).emit('user-online', socket.username);
+			socket.emit('update-files', files);			
 			for (i = 0; i < io.sockets.clients(projid).length; i++)
 			{
 				var client = io.sockets.clients(projid)[i];
 				socket.emit('user-online', client.username);
 			}
 		});
+	});
+	socket.on('random-username', function () {
+		socket.emit('random-username', random_username());
+	});
+	socket.on('update-username', function (username) {
+		if (socket.username !== null)
+		{
+			socket.broadcast.in(socket.projid).emit('user-offline', socket.username);
+		}
+		socket.username = username;
+		socket.emit('update-username', username);
+		socket.broadcast.in(socket.projid).emit('user-online', socket.username);
 	});
 	socket.on('set-file', function (filename) {
 		socket.document = socket.projid + "/" + filename;
