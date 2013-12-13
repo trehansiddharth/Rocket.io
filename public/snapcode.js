@@ -6,14 +6,6 @@ $(document).ready(function () {
 	editor.setFontSize(15);
 	var uploading = true;
 	var reader = new FileReader();
-	/*if ($.cookie('visited'))
-	{
-		$("#alpha").addClass("invisible-element");
-	}
-	else
-	{
-		$.cookie('visited', 'true', { expires: 4, path: '/' });
-	}*/
 	$("#upload").on('dragenter', function (e) 
 	{
 		if (uploading)
@@ -92,7 +84,7 @@ $(document).ready(function () {
 	if (url.indexOf("/p/") !== -1)
 	{
 		var parsed = $(location).attr('href').split('/');
-		var projid = parsed[parsed.length - 1];
+		projid = parsed[parsed.length - 1];
 		var hostid = parsed[2];
 		
 		socket = io.connect("http://" + hostid);
@@ -281,6 +273,8 @@ function setupsync()
 	/*$("#build").on('click', function () {
 		syncsocket.emit("build");
 	});*/
+	
+	syncsocket.emit("create", projid);
 	
 	syncsocket.on("error", function (value, err) {
 		alert("Error with SnapSync: error number " + value + ", " + err);

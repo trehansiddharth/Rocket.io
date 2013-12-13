@@ -16,8 +16,8 @@ html, body {
 }
 .row-navbar
 {
-	box-shadow: 0px 10px 10px #888888;
-	-webkit-box-shadow: 0px 10px 10px #888888;
+	-webkit-box-shadow: 0 10px 10px #888888;
+    box-shadow: 0 10px 10px #888888;
 }
 .left
 {
@@ -41,8 +41,10 @@ html, body {
 	padding: 0px;
 	border-left-style: solid;
 	border-right-style: solid;
-	border-left-radius: 1px;
-	border-right-radius: 1px;
+	border-top-left-radius: 1px;
+	border-top-right-radius: 1px;
+	border-bottom-left-radius: 1px;
+	border-bottom-right-radius: 1px;
 	border-left-color: black;
 	border-right-color: black;
 }

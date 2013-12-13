@@ -164,7 +164,7 @@ app.use(function(req, res, next) {
 			}
 			else
 			{
-				var new_project = { projid : url.replace("/p/", ""), files : [], testing: true };
+				var new_project = { projid : url.replace("/p/", ""), files : [], testing: false };
 				projects.insert(new_project, { w : 1 }, function (err, result) {
 					res.sendfile('./snapcode.html');
 				});

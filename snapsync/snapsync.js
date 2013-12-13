@@ -7,10 +7,10 @@ var io = si.listen(9000);
 io.sockets.on('connection', function (socket) {
 	socket.emit('connection-ok');
 	socket.on('create', function (projid) {
-		fs.exists("./" + projid + "/", function (exists) {
+		fs.exists("./projects/" + projid, function (exists) {
 			if (!exists)
 			{
-				fs.mkdir("./" + projid, function (err) {
+				fs.mkdir("./projects/" + projid, function (err) {
 					if (err)
 					{
 						socket.emit("error", 3, err);
@@ -30,7 +30,7 @@ io.sockets.on('connection', function (socket) {
 		socket.cwd = new_cwd;
 	});
 	socket.on('update-sync', function (filename, syncfile) {
-		fs.writeFile("./" + socket.projid + "/" + filename, syncfile, function (err) {
+		fs.writeFile("./projects/" + socket.projid + "/" + filename, syncfile, function (err) {
 			if (err)
 			{
 				socket.emit('error', 2, err); // 2: write file failed
@@ -38,13 +38,17 @@ io.sockets.on('connection', function (socket) {
 		});
 	});
 	socket.on('update-file', function (filename, contents) {
-		fs.readFile("./" + socket.projid + "/" + filename, function (err, path) {
-			fs.writeFile(path, contents, function (err) {
-				if (err)
-				{
-					socket.emit('error', 2, err); // 2: write file failed
-				}
-			});
+		fs.readFile("./projects/" + socket.projid + "/" + filename, "utf8", function (err, data) {
+			if (!err)
+			{
+				var path = data.split("\n")[0];
+				fs.writeFile(path, contents, function (err) {
+					if (err)
+					{
+						socket.emit('error', 2, err); // 2: write file failed
+					}
+				});
+			}
 		});
 	});
 	socket.on('build', function () {
