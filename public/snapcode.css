@@ -204,6 +204,11 @@ div.scrollable {
 	margin-top: auto;
 	margin-bottom: auto;
 }
+.ace_marker-layer .mark {
+	position: absolute;
+	z-index: 4;
+	background: #DFFF9E;
+}
 table {
 	border: none;
 }

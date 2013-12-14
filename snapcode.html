@@ -138,10 +138,10 @@
 								<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-flash"></i> SnapSync <b class="caret"></b></a>
 									<ul class="dropdown-menu">
 										<li><a id="sync" class="pointing" onclick="return opensync();"><i class="glyphicon glyphicon-refresh"></i> Sync</a></li>
-										<li><a id="build" class="pointing"><i class="glyphicon glyphicon-inbox"></i> Build</a></li>
-										<li><a id="deploy" class="pointing"><i class="glyphicon glyphicon-hdd"></i> Deploy</a></li>
+										<li><a id="build" class="pointing" onclick="return openbuild();"><i class="glyphicon glyphicon-inbox"></i> Build</a></li>
+										<li><a id="deploy" class="pointing" onclick="return opendeploy();"><i class="glyphicon glyphicon-hdd"></i> Deploy</a></li>
 										<li class="divider"></li>
-										<li><a id="syncsetup" class="pointing"><i class="glyphicon glyphicon-cog"></i> Sync Settings...</a></li>
+										<li><a id="syncsetup" class="pointing" onclick="return opensettings();"><i class="glyphicon glyphicon-cog"></i> Sync Settings...</a></li>
 									</ul>
 								</li>
 								<li class="dropdown"><a class="pointing"><i class="glyphicon glyphicon-user"></i> <span id="login-username">Sign in</span></b></a>

@@ -2,6 +2,7 @@ sessions = [];
 
 $(document).ready(function () {
 	var editor = ace.edit("editor");
+	var Range = ace.require('ace/range').Range;
 	editor.setValue("", -1);
 	editor.setFontSize(15);
 	var uploading = true;
@@ -187,11 +188,17 @@ $(document).ready(function () {
 					gotofile = false;
 				}
 			}
-			socket.emit('random-username');
+			if (!myname)
+			{	
+				socket.emit('random-username');
+			}
 		});
 		
 		$("#file-settings-save").on("click", function () {
-			syncsocket.emit("update-sync", settingsfile, $("#sync-with").val());
+			if (syncing)
+			{
+				syncsocket.emit("update-sync", settingsfile, $("#sync-with").val());
+			}
 			$("#file-settings").modal('hide');
 		});
 		
@@ -211,7 +218,10 @@ $(document).ready(function () {
 		
 		socket.on('file-change', function (filename, change) {
 			inserted = true;
-			fetch_session(filename)["session"].getDocument().applyDeltas([change]);
+			var sess = fetch_session(filename)["session"];
+			sess.getDocument().applyDeltas([change]);
+			var chrange = new Range(change.range.start.row, change.range.start.column, change.range.end.row, change.range.end.column);
+			sess.addMarker(chrange, "mark", "fullLine", false);
 			inserted = false;
 		});
 		
@@ -351,6 +361,51 @@ function opensync()
 		{
 			var sess = sessions[i];
 			syncsocket.emit("update-file", sessions[i]["filename"], sessions[i]["session"].getDocument().getValue());
+		}
+	}
+	else
+	{
+		$("#installss").modal();
+	}
+	return syncing;
+}
+function openbuild()
+{
+	if (syncing)
+	{
+		//window.open($(location).attr('href').replace("/p/", "/s/"));
+		alert("This feature will be implented soon!");
+	}
+	else
+	{
+		$("#installss").modal();
+	}
+	return syncing;
+}
+function opendeploy()
+{
+	if (syncing)
+	{
+		//window.open($(location).attr('href').replace("/p/", "/s/"));
+		for (i = 0; i < sessions.length; i++)
+		{
+			alert("This feature will be implented soon!");
+		}
+	}
+	else
+	{
+		$("#installss").modal();
+	}
+	return syncing;
+}
+function opensettings()
+{
+	if (syncing)
+	{
+		//window.open($(location).attr('href').replace("/p/", "/s/"));
+		for (i = 0; i < sessions.length; i++)
+		{
+			alert("This feature will be implented soon!");
 		}
 	}
 	else
