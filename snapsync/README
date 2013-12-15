@@ -1,0 +1,21 @@
+README
+======
+
+Notes
+-----
+* This is SnapSync version 0.1 for Ubuntu.
+* Proper installation depends on upstart.
+
+Installation instructions
+-------------------------
+$ cd snapsync/
+$ ./install.sh
+The installation script will ask for a root password.
+After installation, refresh the snapcode page and you should be ready to go.
+
+Removal instructions
+--------------------
+$ cd snapsync/
+$ ./remove.sh
+
+Happy coding!

@@ -1,5 +1,4 @@
 {
-        "version": "0.1.3-1",
         "name": "Snapcode",
         "description": "Code here, deploy anywhere",
         "dependencies": {
@@ -17,5 +16,6 @@
         },
         "engines": {
                 "node": "0.10.x"
-        }
+        },
+        "version": "0.2.0"
 }

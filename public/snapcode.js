@@ -86,7 +86,7 @@ $(document).ready(function () {
 	{
 		var parsed = $(location).attr('href').split('/');
 		projid = parsed[parsed.length - 1];
-		var hostid = parsed[2];
+		hostid = parsed[2];
 		
 		socket = io.connect("http://" + hostid);
 	
@@ -278,12 +278,14 @@ $(document).ready(function () {
 		});
 		
 		editor.on('change', function (e) {
+			var change = e.data;
 			if (!inserted)
 			{
-				socket.emit('file-change', e.data);
-				console.log(e.data);
+				socket.emit('file-change', change);
 				changed = true;
 			}
+			var chrange = new Range(change.range.start.row, change.range.start.column, change.range.end.row, change.range.end.column);
+			editor.getSession().addMarker(chrange, "mark-self", "fullLine", false);
 		});
 		
 		socket.emit('create', projid);
@@ -314,14 +316,25 @@ function setupsync()
 {
 	//syncsocket.emit("update-build-cmd", "date");
 	
-	/*$("#build").on('click', function () {
-		syncsocket.emit("build");
-	});*/
-	
 	syncsocket.emit("create", projid);
 	
 	syncsocket.on("error", function (value, err) {
-		alert("Error with SnapSync: error number " + value + ", " + err);
+		if (value == 1)
+		{
+			alert("ERROR: No build command was specified");
+		}
+		else if (value == 2)
+		{
+			alert("ERROR: A file write operation failed");
+		}
+		else if (value == 3)
+		{
+			alert("ERROR: Making the project directory failed");
+		}
+		else if (value == 4)
+		{
+			alert("ERROR: A variable was unspecified");
+		}
 	});
 	
 	syncsocket.on('get-sync', function (filename) {
@@ -413,6 +426,10 @@ function opensettings()
 		$("#installss").modal();
 	}
 	return syncing;
+}
+function installsnapsync()
+{
+	window.open("http://" + hostid + "/public/snapsync-0.1-linux.zip");
 }
 function fetch_session(filename)
 {
