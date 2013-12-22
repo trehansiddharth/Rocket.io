@@ -37,11 +37,41 @@ io.sockets.on('connection', function (socket) {
 		socket.document = null;
 		socket.join(projid);
 		list_files(projid, function (files) {
-			socket.emit('update-files', files);			
 			for (i = 0; i < io.sockets.clients(projid).length; i++)
 			{
 				var client = io.sockets.clients(projid)[i];
 				socket.emit('user-online', client.username);
+			}
+			if (files.length == 0)
+			{
+				socket.emit("files-added");
+			}
+			else
+			{
+				socket.filecount = 0;
+				for (i = 0; i < files.length; i++)
+				{
+					console.log(files[i]);
+					var document = projid + "/" + files[i];
+					var doc = find_document(document);
+					if (doc)
+					{
+						socket.emit("add-file", files[i], doc["document"].getValue());
+					}
+					else
+					{
+						read_file(projid, files[i], function (filename, contents) {
+							socket.emit("add-file", filename, contents);
+						});
+					}
+				}
+				socket.on("socket-ok", function () {
+					socket.filecount++;
+					if (socket.filecount == files.length)
+					{
+						socket.emit("files-added");
+					}
+				});
 			}
 		});
 	});
@@ -62,25 +92,11 @@ io.sockets.on('connection', function (socket) {
 		socket.join(socket.document);
 		if (!find_document(socket.document))
 		{
-			read_file(socket.projid, filename, function (contents) {
+			read_file(socket.projid, filename, function (filename, contents) {
 				insert_document(socket.document, contents);
-				console.log("new file added: " + filename);
 			});
 		}
-	});
-	socket.on('get-session', function (filename) {
-		var document = socket.projid + "/" + filename;
-		var doc = find_document(document);
-		if (doc)
-		{
-			socket.emit('push-session', filename, doc["document"].getValue());
-		}
-		else
-		{
-			read_file(socket.projid, filename, function (contents) {
-				socket.emit('push-session', filename, contents);
-			});
-		}
+		socket.emit("set-file", filename);
 	});
 	socket.on('file-change', function(change) {
 		console.log(socket.document);
@@ -103,7 +119,19 @@ io.sockets.on('connection', function (socket) {
 			}
 			else
 			{
-				io.sockets.in(socket.projid).emit('update-files', [filename]);
+				io.sockets.in(socket.projid).emit('add-file', filename, contents);
+			}
+		});
+	});
+	socket.on('remove-file', function (filename) {
+		remove_file(socket.projid, filename, function (err) {
+			if (err)
+			{
+				throw err;
+			}
+			else
+			{
+				io.sockets.in(socket.projid).emit("remove-file", filename);
 			}
 		});
 	});
@@ -189,14 +217,6 @@ app.use(function(req, res, next) {
 			}
 		});
 	}
-	else if (req.path.substring(0, 3) == '/g/')
-	{
-	
-	}
-	else if (req.path.substring(0, 3) == '/r/')
-	{
-	
-	}
 	else
 	{
 		next();
@@ -269,7 +289,7 @@ read_file = function (projid, filename, cb) {
 		}
 		else
 		{
-			cb(items[0]["files"][0]["contents"]);
+			cb(filename, items[0]["files"][0]["contents"]);
 		}
 	});
 }

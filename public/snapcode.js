@@ -1,219 +1,102 @@
-sessions = [];
-
 $(document).ready(function () {
-	var editor = ace.edit("editor");
-	var Range = ace.require('ace/range').Range;
-	editor.setValue("", -1);
-	editor.setFontSize(15);
-	var uploading = true;
-	var reader = new FileReader();
-	$("#upload").on('dragenter', function (e) 
-	{
-		if (uploading)
-		{
-			e.stopPropagation();
-			e.preventDefault();
-			$(this).css('border-color', 'black');
-		}
-	});
-	$("#upload").on('dragover', function (e) 
-	{
-		if (uploading)
-		{
-			e.stopPropagation();
-			e.preventDefault();
-		}
-	});
-	$("#upload").on('drop', function (e) 
-	{
-		if (uploading)
-		{
-			$(this).css('border-color', 'gray');
-			e.preventDefault();
-			var files = e.originalEvent.dataTransfer.files;
-		 
-			//We need to send dropped files to Server
-			handleFileUpload(reader, files);
-		}
-	});
-	$(document).on('dragenter', function (e) 
-	{
-		if (uploading)
-		{
-			e.stopPropagation();
-			e.preventDefault();
-		}
-	});
-	$(document).on('dragover', function (e) 
-	{
-		if (uploading)
-		{
-			e.stopPropagation();
-			e.preventDefault();
-			$("#upload").css('border-color', 'gray');
-		}
-	});
-	$(document).on('drop', function (e) 
-	{
-		if (uploading)
-		{
-			e.stopPropagation();
-			e.preventDefault();
-		}
-	});
-	
-	$("#choosefile").on('click', function (e)
-	{
-		if (uploading)
-		{
-			document.getElementById('upload-dialog').click();
-		}
-	});
-	$("#uploadlink").on('click', function (e)
-	{
-		if (uploading)
-		{
-			document.getElementById('upload-dialog').click();
-		}
-	});
-	$("#upload-dialog").change(function (e) {
-		handleFileUpload(reader, e.target.files);		
-	});
-	
-	var url = $(location).attr('href');
+	url = $(location).attr('href');
 	
 	if (url.indexOf("/p/") !== -1)
 	{
-		var parsed = $(location).attr('href').split('/');
+		var editor = ace.edit("editor");
+		var Range = ace.require('ace/range').Range;
+		editor.setFontSize(15);
+		var uploading = true;
+		var reader = new FileReader();
+		var parsed = url.split('/');
 		projid = parsed[parsed.length - 1];
 		hostid = parsed[2];
-		
-		socket = io.connect("http://" + hostid);
-	
-		$(".add-file").click(function ()
-		{
-			$(".item").removeClass("selected");
-			$(this).addClass("selected");
-			$("#editor").addClass("invisible-element");
-			$("#start").removeClass("invisible-element");
-		});
-		
-		var gotofile = true;
-		var hasfiles = false;
+		var lastfile = null;
 		var inserted = false;
 		var currentfile = null;
 		var myname = null;
 		var nowtalking = null;
-		
-		$("#makeproject").click(function ()
-		{
-			if ($("#filename").val().indexOf(".") != -1)
-			{
-				socket.emit('make-file', $("#filename").val(), $("#cpfile").val());
-				//console.log($("#new-filename").val());
-				gotofile = true;
-				$("#filename").val("");
-				$("#cpfile").val("");
-			}
-			else if (fetch_session($("#filename").val()))
-			{
-				alert("A file of this name already exists. You must specify a different name.");
-			}
-			else
-			{
-				alert("Your file name must be non-empty and specify an extension.");
-			}
-		});
-		
 		var settingsfile = null;
+		var onlyyou = true;
+		sessions = [];
 		
-		socket.on('update-files', function (files) {
-			if (files.length > 0)
+		socket = io.connect("http://" + hostid);
+		
+		socket.on('add-file', function (filename, contents) {
+			if (!lastfile)
 			{
 				$("#editor").removeClass("invisible-element");
 				$("#start").addClass("invisible-element");
 				$("#empty").addClass("invisible-element");
 				$("#notempty").removeClass("invisible-element");
+				lastfile = filename;
+			}
+			$("#files").append(html_file(filename));
+			var modename = require("ace/ext/modelist").getModeForPath(filename).mode;
+			var modeobj = require(modename).Mode;
+			var item = $("#item-" + filename.replace(".", "\\."));
+			sessions.push({filename : filename, session: ace.createEditSession(contents, new modeobj()), item : item});
+			item.find("#file").click(function ()
+			{
+				console.log(this.parentNode.parentNode.parentNode.parentNode.id);
+				socket.emit("set-file", this.parentNode.parentNode.parentNode.parentNode.id.substr(5));
+			});
+			item.find("#cog").click(function ()
+			{
+				var thisfile = this.parentNode.parentNode.parentNode.parentNode.id.substr(5);
+				console.log(thisfile);
+				settingsfile = thisfile;
+				$("#file-name").val(thisfile);
+				if (syncing)
+				{
+					$("#sync-with").prop('disabled', false);
+					
+					syncsocket.emit('get-sync', thisfile);
+				}
+				else
+				{
+					$("#sync-with").prop('disabled', true);
+					$("#sync-with").val("You need to have SnapSync installed for this to work");
+				}
+				$("#file-settings").modal();
+			});
+			socket.emit("socket-ok");
+		});
+		socket.on("remove-file", function (filename) {
+			var session = fetch_session(filename);
+			session["item"].parentNode.removeChild(session["item"]);
+			remove_session(filename);
+			if (currentfile === filename)
+			{
+				socket.emit("set-file", sessions[0]["filename"]);
+			}
+		});
+		socket.on("rename-file", function (previous_filename, filename) {
+			
+		});
+		socket.on("set-file", function (filename) {
+			var session = fetch_session(filename);
+			$(".item").removeClass("selected");
+			session["item"].addClass("selected");
+			currentfile = filename;
+			editor.setSession(session["session"]);
+			editor.focus();
+		});
+		socket.on('files-added', function () {
+			if (lastfile)
+			{
+				socket.emit("set-file", lastfile);
 			}
 			else
 			{
 				$("#editor").addClass("invisible-element");
 				$("#start").removeClass("invisible-element");
-			}
-			for (var i = 0; i < files.length; i++)
-			{
-				var filename = files[i].replace(" ", "_");
-				$(".super-select").prepend(html_file(files[i]));
-				socket.emit('get-session', filename);
-				$("#file-" + filename.replace(".", "\\.")).click(function ()
-				{
-					var that = $(this);
-					var thisfile = that.attr("id").substr(5);
-					console.log(thisfile);
-					$(".item").removeClass("selected");
-					$("#item-" + thisfile.replace(".", "\\.")).addClass("selected");
-					console.log("#item-" + thisfile);
-					socket.emit('set-file', thisfile);
-					currentfile = thisfile;
-					var sess = fetch_session(thisfile);
-					if (sess !== null)
-					{
-						editor.setSession(sess["session"]);
-					}
-					$("#editor").removeClass("invisible-element");
-					$("#start").addClass("invisible-element");
-				});
-				$("#cog-" + filename.replace(".", "\\.")).click(function ()
-				{
-					var that = $(this);
-					var thisfile = that.attr("id").substr(4);
-					settingsfile = thisfile;
-					$("#file-name").val(thisfile);
-					if (syncing)
-					{
-						$("#sync-with").prop('disabled', false);
-						//$("#sync-with").val("syncing");
-						syncsocket.emit('get-sync', thisfile);
-					}
-					else
-					{
-						$("#sync-with").prop('disabled', true);
-						$("#sync-with").val("You need to have SnapSync installed for this to work");
-					}
-					$("#file-settings").modal();
-				});
-				if (i == files.length - 1 && gotofile)
-				{
-					$("#file-" + filename.replace(".", "\\.")).trigger("click");
-					gotofile = false;
-				}
+				$(".add-file").addClass("selected");
 			}
 			if (!myname)
 			{	
 				socket.emit('random-username');
 			}
-		});
-		
-		$("#file-settings-save").on("click", function () {
-			if (syncing)
-			{
-				syncsocket.emit("update-sync", settingsfile, $("#sync-with").val());
-			}
-			$("#file-settings").modal('hide');
-		});
-		
-		socket.on('push-session', function (filename, contents) {
-			var modename = require("ace/ext/modelist").getModeForPath(filename).mode;
-			var modeobj = require(modename).Mode;
-			sessions.push({filename : filename, session: ace.createEditSession(contents, new modeobj()) });
-			if (currentfile === filename)
-			{
-				editor.setSession(fetch_session(filename)["session"]);
-			}
-		});
-		
-		socket.on("delete-file", function (filename) {
-			// code to delete html element goes here
 		});
 		
 		socket.on('file-change', function (filename, change) {
@@ -224,17 +107,25 @@ $(document).ready(function () {
 			sess.addMarker(chrange, "mark", "fullLine", false);
 			inserted = false;
 		});
+		editor.on('change', function (e) {
+			var change = e.data;
+			if (!inserted)
+			{
+				socket.emit('file-change', change);
+				changed = true;
+			}
+			//var chrange = new Range(change.range.start.row, change.range.start.column, change.range.end.row, change.range.end.column);
+			//editor.getSession().addMarker(chrange, "mark-self", "fullLine", false);
+		});
 		
 		socket.on('random-username', function (username) {
 			socket.emit('update-username', username);
-		});
-		
+		});		
 		socket.on('update-username', function (username) {
 			$("#username").append(html_username(username));
 			//$("#login-username").text(username);
 			myname = username;
 		});
-		
 		socket.on('chat', function(username, message) {
 			var talkerclass;
 			if (nowtalking != username)
@@ -253,9 +144,6 @@ $(document).ready(function () {
 			$(".chat-text").last().append(message.replace("<", "&lt;").replace(">", "&gt;") + "<br />");
 			$("#substream").scrollTop($("#substream")[0].scrollHeight);
 		});
-		
-		var onlyyou = true;
-		
 		socket.on('user-online', function(username) {
 			if (username != myname)
 			{
@@ -267,7 +155,6 @@ $(document).ready(function () {
 				$("#online").append(html_user(username));
 			}
 		});
-		
 		socket.on('user-offline', function(username) {
 			$("p#" + username.replace(" ", "_")).remove();
 			if ($('#online').is(':empty'))
@@ -276,20 +163,6 @@ $(document).ready(function () {
 				onlyyou = true;
 			}
 		});
-		
-		editor.on('change', function (e) {
-			var change = e.data;
-			if (!inserted)
-			{
-				socket.emit('file-change', change);
-				changed = true;
-			}
-			var chrange = new Range(change.range.start.row, change.range.start.column, change.range.end.row, change.range.end.column);
-			editor.getSession().addMarker(chrange, "mark-self", "fullLine", false);
-		});
-		
-		socket.emit('create', projid);
-		
 		$('#message').keyup(function(e) {
 			var code = e.keyCode || e.which;
 			if (code == 13)
@@ -299,16 +172,124 @@ $(document).ready(function () {
 			}
 		});
 		
+		socket.emit('create', projid);
+		
+		$("#file-settings-save").on("click", function () {
+			if (syncing)
+			{
+				syncsocket.emit("update-sync", settingsfile, $("#sync-with").val()); // TODO: curry in the settingsfile variable
+			}
+			$("#file-settings").modal('hide');
+		});
+		$("#upload").on('dragenter', function (e) 
+		{
+			if (uploading)
+			{
+				e.stopPropagation();
+				e.preventDefault();
+				$(this).css('border-color', 'black');
+			}
+		});
+		$("#upload").on('dragover', function (e) 
+		{
+			if (uploading)
+			{
+				e.stopPropagation();
+				e.preventDefault();
+			}
+		});
+		$("#upload").on('drop', function (e) 
+		{
+			if (uploading)
+			{
+				$(this).css('border-color', 'gray');
+				e.preventDefault();
+				var files = e.originalEvent.dataTransfer.files;
+				handleFileUpload(reader, files);
+			}
+		});
+		$(document).on('dragenter', function (e) 
+		{
+			if (uploading)
+			{
+				e.stopPropagation();
+				e.preventDefault();
+			}
+		});
+		$(document).on('dragover', function (e) 
+		{
+			if (uploading)
+			{
+				e.stopPropagation();
+				e.preventDefault();
+				$("#upload").css('border-color', 'gray');
+			}
+		});
+		$(document).on('drop', function (e) 
+		{
+			if (uploading)
+			{
+				e.stopPropagation();
+				e.preventDefault();
+			}
+		});
+		$("#choosefile").on('click', function (e)
+		{
+			if (uploading)
+			{
+				document.getElementById('upload-dialog').click();
+			}
+		});
+		$("#uploadlink").on('click', function (e)
+		{
+			if (uploading)
+			{
+				document.getElementById('upload-dialog').click();
+			}
+		});
+		$("#upload-dialog").change(function (e) {
+			handleFileUpload(reader, e.target.files);		
+		});
+		$(".add-file").click(function ()
+		{
+			$(".item").removeClass("selected");
+			$(this).addClass("selected");
+			$("#editor").addClass("invisible-element");
+			$("#start").removeClass("invisible-element");
+		});
+		$("#makeproject").click(function ()
+		{
+			if ($("#filename").val().indexOf(".") != -1)
+			{
+				socket.emit('make-file', $("#filename").val(), $("#cpfile").val());
+				gotofile = true;
+				$("#filename").val("");
+				$("#cpfile").val("");
+			}
+			else if (fetch_session($("#filename").val()))
+			{
+				alert("A file of this name already exists. You must specify a different name.");
+			}
+			else
+			{
+				alert("Your file name must be non-empty and specify an extension.");
+			}
+		});
+		
 		// SnapSync integration
 		
 		syncing = false;
 		syncsocket = io.connect("http://localhost:9000");
 		
-		syncsocket.on('connection-ok', function () {
+		syncsocket.on('connection-ok', function () { // TODO: the order here is messed up
 			console.log('connection-ok');
 			syncing = true;
 			setupsync();
 		});
+	}
+	else
+	{
+		// TODO: redirect to error page
 	}
 });
 
@@ -353,7 +334,7 @@ function handleFileUpload(reader, files) // TODO: validate file
 {
 	var thisfile = null;
 	reader.onload = function(e) {
-		socket.emit('make-file', thisfile.name, e.target.result);	
+		socket.emit('make-file', thisfile.name.replace(" ", "_"), e.target.result);	
 	}
 	for (var i = 0; i < files.length; i++)
 	{
@@ -443,10 +424,21 @@ function fetch_session(filename)
 	}
 	return null;
 }
+function remove_session(filename)
+{
+	var i = sessions.length;
+	while (i--)
+	{
+		if (sessions[i]["filename"] === filename)
+		{
+			sessions.splice(i, 1);
+		}
+	}
+}
 
 function html_file(filename)
 {
-	return "<div id=\"item-" + filename.replace(" ", "_") + "\" class=\"item fillx\"><table><td><i class=\"glyphicon glyphicon-file\"></i></td><td id=\"file-" + filename.replace(" ", "_") + "\" class=\"item-main pointing\">" + filename + "</td><td class=\"fillx\"></td><td><i id=\"cog-" + filename.replace(" ", "_") + "\" class=\"glyphicon glyphicon-cog pointing\"></i></td></table></div>";
+	return "<div id=\"item-" + filename + "\" class=\"item fillx\"><table><td><i class=\"glyphicon glyphicon-file\"></i></td><td id=\"file\" class=\"item-main pointing\">" + filename + "</td><td class=\"fillx\"></td><td id=\"cog\"><i class=\"glyphicon glyphicon-cog pointing\"></i></td></table></div>";
 
 // <td><i class=\"glyphicon glyphicon-remove red pointing\"></i></td>
 }
