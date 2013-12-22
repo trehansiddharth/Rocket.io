@@ -20,6 +20,7 @@ mongodb.MongoClient.connect(mongodb_uri, function (err, db) {
 	else
 	{
 		projects = db.collection("projects");
+		console.log("Connected to database");
 	}
 });
 
@@ -32,10 +33,14 @@ var io = require('socket.io').listen(server);
 
 var opendocuments = [];
 io.sockets.on('connection', function (socket) {
-	socket.on('create', function (projid) {
+	socket.on('reset', function (projid) {
 		socket.projid = projid;
 		socket.document = null;
 		socket.join(projid);
+		socket.emit("connection-ok");
+	});
+	socket.on('get-files', function () {
+		var projid = socket.projid;
 		list_files(projid, function (files) {
 			for (i = 0; i < io.sockets.clients(projid).length; i++)
 			{
@@ -87,21 +92,31 @@ io.sockets.on('connection', function (socket) {
 		socket.emit('update-username', username);
 		socket.broadcast.in(socket.projid).emit('user-online', socket.username);
 	});
-	socket.on('set-file', function (filename) {
-		socket.document = socket.projid + "/" + filename;
-		socket.join(socket.document);
-		if (!find_document(socket.document))
+	socket.on('file-change', function(filename, change) {
+		if (socket.document != socket.projid + "/" + filename)
+		{
+			if (socket.document)
+			{
+				socket.leave(socket.document);
+			}
+			socket.document = socket.projid + "/" + filename;
+			socket.join(socket.document);
+		}
+		var doc = find_document(socket.document);
+		if (doc)
+		{
+			doc["document"].applyDeltas([change]);
+			socket.broadcast.in(socket.projid).emit('file-change', filename, change);
+		}
+		else
 		{
 			read_file(socket.projid, filename, function (filename, contents) {
 				insert_document(socket.document, contents);
+				doc = find_document(socket.document);
+				doc["document"].applyDeltas([change]);
+				socket.broadcast.in(socket.projid).emit('file-change', filename, change);
 			});
 		}
-		socket.emit("set-file", filename);
-	});
-	socket.on('file-change', function(change) {
-		console.log(socket.document);
-		find_document(socket.document)["document"].applyDeltas([change]);
-		socket.broadcast.in(socket.projid).emit('file-change', socket.document.split("/")[1], change);
 	});
 	socket.on('disconnect', function () {
 		if (socket.document != null)
@@ -120,6 +135,7 @@ io.sockets.on('connection', function (socket) {
 			else
 			{
 				io.sockets.in(socket.projid).emit('add-file', filename, contents);
+				socket.emit("files-added");
 			}
 		});
 	});
