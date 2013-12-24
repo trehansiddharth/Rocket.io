@@ -42,11 +42,6 @@ io.sockets.on('connection', function (socket) {
 	socket.on('get-files', function () {
 		var projid = socket.projid;
 		list_files(projid, function (files) {
-			for (i = 0; i < io.sockets.clients(projid).length; i++)
-			{
-				var client = io.sockets.clients(projid)[i];
-				socket.emit('user-online', client.username);
-			}
 			if (files.length == 0)
 			{
 				socket.emit("files-added");
@@ -75,6 +70,18 @@ io.sockets.on('connection', function (socket) {
 					if (socket.filecount == files.length)
 					{
 						socket.emit("files-added");
+						for (i = 0; i < io.sockets.clients(socket.projid).length; i++)
+						{
+							var client = io.sockets.clients(socket.projid)[i];
+							if (client.document)
+							{
+								socket.emit('user-online', client.username, client.document.split("/")[1], client.position);
+							}
+							else
+							{
+								socket.emit('user-online', client.username, null, client.position);
+							}
+						}
 					}
 				});
 			}
@@ -90,9 +97,16 @@ io.sockets.on('connection', function (socket) {
 		}
 		socket.username = username;
 		socket.emit('update-username', username);
-		socket.broadcast.in(socket.projid).emit('user-online', socket.username);
+		if (socket.document)
+		{
+			socket.broadcast.in(socket.projid).emit('user-online', socket.username, socket.document.split("/")[1], socket.position);
+		}
+		else
+		{
+			socket.broadcast.in(socket.projid).emit('user-online', socket.username, null, socket.position);
+		}
 	});
-	socket.on('file-change', function(filename, change) {
+	socket.on('file-change', function (filename, change) {
 		if (socket.document != socket.projid + "/" + filename)
 		{
 			if (socket.document)
@@ -118,13 +132,39 @@ io.sockets.on('connection', function (socket) {
 			});
 		}
 	});
+	socket.on('cursor-change', function (filename, position) {
+		var oldfile = null;
+		if (socket.document != socket.projid + "/" + filename)
+		{
+			if (socket.document)
+			{
+				oldfile = socket.document.split("/")[1];
+				socket.leave(socket.document);
+			}
+			socket.document = socket.projid + "/" + filename;
+			socket.join(socket.document);
+		}
+		else
+		{
+			oldfile = filename;
+		}
+		socket.position = position;
+		socket.broadcast.in(socket.projid).emit('cursor-change', socket.username, oldfile, filename, position);
+	});
 	socket.on('disconnect', function () {
 		if (socket.document != null)
 		{
 			socket.leave(socket.document);
 		}
 		socket.leave(socket.projid);
-		io.sockets.in(socket.projid).emit('user-offline', socket.username);
+		if (socket.document)
+		{
+			io.sockets.in(socket.projid).emit('user-offline', socket.username, socket.document.split("/")[1]);
+		}
+		else
+		{
+			io.sockets.in(socket.projid).emit('user-offline', socket.username, null);
+		}
 	});
 	socket.on('make-file', function (filename, contents) {
 		create_file(socket.projid, filename, contents, function (err, count) {

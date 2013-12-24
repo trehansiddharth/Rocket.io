@@ -14,16 +14,16 @@ html, body {
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
 }
-.row-navbar {
+/*.row-navbar {
 	position: relative;
-	-webkit-box-shadow: 0 2px 2px 10px #888888;
-    box-shadow: 0 2px 10px 2px #888888;
+	-webkit-box-shadow: 0 0 2px 10px #888888;
+    box-shadow: 0 0 10px 2px #888888;
     z-index: 2;
-}
+}*/
 td.navbar {
 	position: relative;
-	-webkit-box-shadow: 0 2px 2px 10px #666666;
-    box-shadow: 0 2px 10px 2px #666666;
+	-webkit-box-shadow: 0 0 2px 10px #666666;
+    box-shadow: 0 0 10px 2px #666666;
     z-index: 2;
 }
 .left
@@ -50,16 +50,16 @@ td.navbar {
 .left {
 	position: relative;
 	padding: 0px;
-	-webkit-box-shadow: 2px 0 2px 10px #666666;
-	box-shadow: 2px 0 10px 2px #666666;
+	-webkit-box-shadow: 0px 0 2px 10px #666666;
+	box-shadow: 0px 0 10px 2px #666666;
 	position: relative;
 	z-index: 1;
 }
 .right {
 	position: relative;
 	padding: 0px;
-	-webkit-box-shadow: 2px 0 2px 10px #666666;
-	box-shadow: 2px 0 10px 2px #666666;
+	-webkit-box-shadow: 0px 0 2px 10px #666666;
+	box-shadow: 0px 0 10px 2px #666666;
 	position: relative;
 	z-index: 1;
 }
@@ -213,6 +213,13 @@ div.scrollable {
 	position: absolute;
 	z-index: 4;
 	background: #FFFFCC;
+}
+.ace_marker-layer .mark-cursor {
+	position: absolute;
+	z-index: 4;
+	border-left-style: solid;
+	border-left-color: red;
+	border-left-width: 1px;
 }
 table {
 	border: none;

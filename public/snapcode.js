@@ -1,14 +1,15 @@
 $(document).ready(function () {
 	url = $(location).attr('href');
+	var parsed = url.split('/');
 	
 	if (url.indexOf("/p/") !== -1)
 	{
 		editor = ace.edit("editor");
 		var Range = ace.require('ace/range').Range;
+		var Selection = ace.require('ace/selection').Selection;
 		editor.setFontSize(15);
 		var uploading = true;
 		var reader = new FileReader();
-		var parsed = url.split('/');
 		projid = parsed[parsed.length - 1];
 		hostid = parsed[2];
 		var lastfile = null;
@@ -19,7 +20,9 @@ $(document).ready(function () {
 		var nowtalking = null;
 		var settingsfile = null;
 		var onlyyou = true;
+		var changingsession = true;
 		sessions = [];
+		users = [];
 		
 		dom_files = $("#files");
 		dom_editor = $("#editor");
@@ -40,16 +43,15 @@ $(document).ready(function () {
 			var modename = require("ace/ext/modelist").getModeForPath(filename).mode;
 			var modeobj = require(modename).Mode;
 			var item = $("#item-" + filename.replace(".", "\\."));
-			sessions.push({filename : filename, session: ace.createEditSession(contents, new modeobj()), item : item});
-			item.find("#file").click(function () {
+			var session = ace.createEditSession(contents, new modeobj());
+			sessions.push({filename : filename, session: session, item : item});
+			/*item.find("#file").click(function () {
 				var thisfile = this.parentNode.parentNode.parentNode.parentNode.id.substr(5);
 				select_file(thisfile);
-			});
+			});*/
 			item.hover(function () {
 				select_file(this.id.substr(5));
-			}, function () {
-				//unpreview_file();
-			});
+			}, function () { });
 			item.find("#cog").click(function () {
 				var thisfile = this.parentNode.parentNode.parentNode.parentNode.id.substr(5);
 				console.log(thisfile);
@@ -107,8 +109,6 @@ $(document).ready(function () {
 			inserted = true;
 			var sess = fetch_session(filename)["session"];
 			sess.getDocument().applyDeltas([change]);
-			var chrange = new Range(change.range.start.row, change.range.start.column, change.range.end.row, change.range.end.column);
-			sess.addMarker(chrange, "mark", "fullLine", false);
 			inserted = false;
 		});
 		editor.on('change', function (e) {
@@ -118,8 +118,36 @@ $(document).ready(function () {
 				socket.emit('file-change', currentfile, change);
 				changed = true;
 			}
-			//var chrange = new Range(change.range.start.row, change.range.start.column, change.range.end.row, change.range.end.column);
-			//editor.getSession().addMarker(chrange, "mark-self", "fullLine", false);
+		});
+		socket.on('cursor-change', function (username, oldfile, newfile, position) {
+			var i = users.length;
+			while (i--)
+			{
+				if (users[i]["username"] === username)
+				{
+					if (users[i]["cursor"] && oldfile)
+					{
+						fetch_session(oldfile)["session"].removeMarker(users[i]["cursor"]);
+					}
+					if (position)
+					{
+						var crange = new Range(position.row, position.column, position.row, position.column + 1);
+						users[i]["cursor"] = fetch_session(newfile)["session"].addMarker(crange, "mark", "fullLine", false);
+					}
+				}
+			}
+		});
+		editor.on('changeSelection', function () {
+			if (!changingsession && currentfile)
+			{
+				console.log(currentfile);
+				console.log(editor.getCursorPosition());
+				socket.emit("cursor-change", currentfile, editor.getCursorPosition());
+			}
+			else
+			{
+				changingsession = false;
+			}
 		});
 		
 		socket.on('random-username', function (username) {
@@ -148,7 +176,7 @@ $(document).ready(function () {
 			$(".chat-text").last().append(message.replace("<", "&lt;").replace(">", "&gt;") + "<br />");
 			$("#substream").scrollTop($("#substream")[0].scrollHeight);
 		});
-		socket.on('user-online', function(username) {
+		socket.on('user-online', function(username, filename, position) {
 			if (username != myname)
 			{
 				if (onlyyou)
@@ -157,10 +185,22 @@ $(document).ready(function () {
 					onlyyou = false;
 				}
 				$("#online").append(html_user(username));
+				var cursor = null;
+				if (position && filename)
+				{
+					console.log(filename);
+					var crange = new Range(position.row, position.column, position.row, position.column + 1);
+					var cursor = fetch_session(filename)["session"].addMarker(crange, "mark", "fullLine", false);
+					console.log("Cursor: " + cursor);
+					console.log(position);
+				}
+				users.push({ username : username, cursor : cursor });
 			}
 		});
-		socket.on('user-offline', function(username) {
+		socket.on('user-offline', function(username, filename) {
 			$("p#" + username.replace(" ", "_")).remove();
+			fetch_session(filename)["session"].removeMarker(fetch_user(username)["cursor"]);
+			remove_user(username);
 			if ($('#online').is(':empty'))
 			{
 				$("#online").append("<i>No one else is online</i>");
@@ -281,9 +321,6 @@ $(document).ready(function () {
 			{
 				alert("Your file name must be non-empty and specify an extension.");
 			}
-		});
-		$(".super-select").mouseleave(function () {
-			//unpreview_file();
 		});
 		
 		// SnapSync integration
@@ -445,6 +482,29 @@ function remove_session(filename)
 		}
 	}
 }
+function fetch_user(username)
+{
+	var i = users.length;
+	while (i--)
+	{
+		if (users[i]["username"] === username)
+		{
+			return users[i];
+		}
+	}
+	return null;
+}
+function remove_user(username)
+{
+	var i = users.length;
+	while (i--)
+	{
+		if (users[i]["username"] === username)
+		{
+			users.splice(i, 1);
+		}
+	}
+}
 
 function html_file(filename)
 {
@@ -465,6 +525,7 @@ function html_user(username)
 	return "<p id=\"" + username.replace(" ", "_") + "\"class=\"green\"><i class=\"glyphicon glyphicon-user\"></i> " + username + "</p>";
 }
 select_file = function (filename) {
+	changingsession = true;
 	var session = fetch_session(filename);
 	if (currentfile)
 	{
@@ -481,42 +542,3 @@ select_file = function (filename) {
 	editor.setSession(session["session"]);
 	editor.focus();
 };
-/*preview_file = function (filename) {
-	var session = fetch_session(filename);
-	if (previewfile)
-	{
-		$("#item-" + previewfile.replace(".", "\\.")).removeClass("selected");
-	}
-	else if (currentfile)
-	{
-		$("#item-" + currentfile.replace(".", "\\.")).removeClass("selected");
-	}
-	else
-	{
-		dom_editor.removeClass("invisible-element");
-		dom_start.addClass("invisible-element");
-	}
-	dom_addfile.removeClass("selected");
-	session["item"].addClass("selected");
-	previewfile = filename;
-	editor.setSession(session["session"]);
-	editor.setReadOnly(true);
-};
-unpreview_file = function () {
-	var session = fetch_session(currentfile);
-	if (previewfile)
-	{
-		$("#item-" + previewfile.replace(".", "\\.")).removeClass("selected");
-	}
-	else
-	{
-		dom_editor.removeClass("invisible-element");
-		dom_start.addClass("invisible-element");
-	}
-	previewfile = null;
-	dom_addfile.removeClass("selected");
-	session["item"].addClass("selected");
-	editor.setSession(session["session"]);
-	editor.focus();
-	editor.setReadOnly(false);
-};*/
