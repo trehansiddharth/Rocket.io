@@ -23,12 +23,16 @@ $(document).ready(function () {
 		var changingsession = true;
 		sessions = [];
 		users = [];
+		sections = [];
 		
 		dom_files = $("#files");
 		dom_editor = $("#editor");
 		dom_start = $("#start");
 		dom_upload = $("#upload");
 		dom_addfile = $(".add-file");
+		
+		//dom_editor.find(".ace_content").css("font-family", "monospace");
+		//editor.container.style.fontFamily = "monospace";
 		
 		socket = io.connect("http://" + hostid);
 		
@@ -39,19 +43,16 @@ $(document).ready(function () {
 				$("#notempty").removeClass("invisible-element");
 				lastfile = filename;
 			}
-			dom_files.append(html_file(filename));
+			insert_file(filename);
 			var modename = require("ace/ext/modelist").getModeForPath(filename).mode;
 			var modeobj = require(modename).Mode;
 			var item = $("#item-" + filename.replace(".", "\\."));
 			var session = ace.createEditSession(contents, new modeobj());
 			sessions.push({filename : filename, session: session, item : item});
-			/*item.find("#file").click(function () {
-				var thisfile = this.parentNode.parentNode.parentNode.parentNode.id.substr(5);
-				select_file(thisfile);
-			});*/
 			item.hover(function () {
 				select_file(this.id.substr(5));
-			}, function () { });
+				// open hover file settings
+			}, function () { /* close hover file settings */ });
 			item.find("#cog").click(function () {
 				var thisfile = this.parentNode.parentNode.parentNode.parentNode.id.substr(5);
 				console.log(thisfile);
@@ -194,11 +195,23 @@ $(document).ready(function () {
 					console.log("Cursor: " + cursor);
 					console.log(position);
 				}
-				users.push({ username : username, cursor : cursor });
+				users.push({ username : username, cursor : cursor, filename : filename });
 			}
 		});
 		socket.on('user-offline', function(username, filename) {
+			console.log(username);
 			$("p#" + username.replace(" ", "_")).remove();
+			if (!filename)
+			{
+				var i = users.length;
+				while (i--)
+				{
+					if (users[i]["username"] == username)
+					{
+						filename = users[i]["filename"];
+					}
+				}
+			}
 			fetch_session(filename)["session"].removeMarker(fetch_user(username)["cursor"]);
 			remove_user(username);
 			if ($('#online').is(':empty'))
@@ -214,6 +227,10 @@ $(document).ready(function () {
 				socket.emit('send-chat', $('#message').val());
 				$('#message').val('');
 			}
+		});
+		
+		socket.on("ping", function () {
+			socket.emit("ping");
 		});
 		
 		socket.emit("reset", projid);
@@ -524,6 +541,27 @@ function html_user(username)
 {
 	return "<p id=\"" + username.replace(" ", "_") + "\"class=\"green\"><i class=\"glyphicon glyphicon-user\"></i> " + username + "</p>";
 }
+insert_file = function (filename) {
+	var index = filename.indexOf(".");
+	var extension = "other";
+	if (index != -1)
+	{
+		extension = filename.slice(index + 1);
+	}
+	//console.log("adding: " + filename + ", " + extension);
+	add_file_to(filename, extension);
+};
+add_file_to = function (filename, section) {
+	if (!contains(sections, section.toLowerCase()))
+	{
+		add_section(section);
+	}
+	$("#section-" + section.toLowerCase()).after(html_file(filename));
+}
+add_section = function (title) {
+	dom_files.append("<div id=\"section-" + title.toLowerCase() + "\" class=\"section fillx\"><p>" + title.toUpperCase() + "</p></div>");
+	sections.push(title.toLowerCase());
+}
 select_file = function (filename) {
 	changingsession = true;
 	var session = fetch_session(filename);
@@ -542,3 +580,14 @@ select_file = function (filename) {
 	editor.setSession(session["session"]);
 	editor.focus();
 };
+contains = function (a, obj) {
+    var i = a.length;
+    while (i--)
+    {
+       if (a[i] === obj)
+       {
+           return true;
+       }
+    }
+    return false;
+}

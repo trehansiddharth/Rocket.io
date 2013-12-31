@@ -6,8 +6,9 @@
 		<link href="/public/css/bootstrap.css" rel="stylesheet" />
 		<link href="/public/css/bootstrap.min.css" rel="stylesheet" />
 		<link href="/public/snapcode.css" rel="stylesheet" />
-		<link href='http://fonts.googleapis.com/css?family=Cuprum' rel='stylesheet' type='text/css'>
+		<link href='http://fonts.googleapis.com/css?family=Cuprum' rel='stylesheet' type='text/css' />
 		<link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css' />
+		<link href='http://fonts.googleapis.com/css?family=Ubuntu+Mono' rel='stylesheet' type='text/css' />
 	</head>
 	<body>
 		<script src="http://code.jquery.com/jquery.min.js"></script>
@@ -126,14 +127,14 @@
 		<script async src="/public/ace/src/ext-modelist.js"></script>
 		<table id="page" class="fillx filly">
 			<tr class="row-navbar">
-				<td colspan="3" class="navbar navbar-static-top navbar-inverse navbar-default">
+				<td colspan="3" class="bar navbar navbar-static-top navbar-inverse navbar-default">
 					<div class="navbar-inner">
 						<div class="float-left">
 							<ul class="nav navbar-nav">
 								<li><a id="brand" class="pointing">Snapcode</a></li>
 							<ul>
 						</div>
-						<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+						<div class="collapse navbar-collapse">
 							<ul class="nav navbar-nav navbar-right">
 								<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-flash"></i> SnapSync <b class="caret"></b></a>
 									<ul class="dropdown-menu">
@@ -158,9 +159,9 @@
 							<td>
 								<div class="super-select fillx filly scrollable">
 									<div id="files">
-										
+										<!--<div class="section fillx"><p>FILES</p></div>-->
 									</div>
-									<div class="add-file item fillx">
+									<!--<div class="add-file item fillx">
 										<table>
 											<td>
 												<i class="glyphicon glyphicon-plus"></i>
@@ -169,7 +170,7 @@
 												Add file...
 											</td>
 										</table>
-									</div>
+									</div>-->
 								</div>
 							</td>
 						</tr>
@@ -177,7 +178,7 @@
 							<td>
 								<table id="upload" class="fillx">
 									<input type="file" id="upload-dialog" name="upload" class="invisible-element" />
-									<td id="upload-text" class="centery">Drag & drop or <a id="choosefile">choose file</a> to upload</td>
+									<td id="upload-text" class="centery">Drag & drop or <a id="choosefile">choose file</a> to add more code</td>
 								</table>
 							</td>
 						</tr>

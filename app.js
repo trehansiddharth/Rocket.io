@@ -32,6 +32,7 @@ var io = require('socket.io').listen(server);
 //io.set('log level', 1)
 
 var opendocuments = [];
+var sockets = [];
 io.sockets.on('connection', function (socket) {
 	socket.on('reset', function (projid) {
 		socket.projid = projid;
@@ -94,6 +95,18 @@ io.sockets.on('connection', function (socket) {
 		if (socket.username !== null)
 		{
 			socket.broadcast.in(socket.projid).emit('user-offline', socket.username);
+			var i = sockets.length;
+			while (i--)
+			{
+				if (sockets[i]["username"] == username)
+				{
+					sockets[i]["username"] = username;
+				}
+			}
+		}
+		else
+		{
+			sockets.push({ username : username, projid : socket.projid });
 		}
 		socket.username = username;
 		socket.emit('update-username', username);
@@ -157,13 +170,24 @@ io.sockets.on('connection', function (socket) {
 			socket.leave(socket.document);
 		}
 		socket.leave(socket.projid);
-		if (socket.document)
+		if (socket.username)
 		{
-			io.sockets.in(socket.projid).emit('user-offline', socket.username, socket.document.split("/")[1]);
-		}
-		else
-		{
-			io.sockets.in(socket.projid).emit('user-offline', socket.username, null);
+			if (socket.document)
+			{
+				io.sockets.in(socket.projid).emit('user-offline', socket.username, socket.document.split("/")[1]);
+			}
+			else
+			{
+				io.sockets.in(socket.projid).emit('user-offline', socket.username, null);
+			}
+			var i = sockets.length;
+			while (i--)
+			{
+				if (sockets[i]["username"] == socket.username)
+				{
+					sockets.splice(i, 1);
+				}
+			}
 		}
 	});
 	socket.on('make-file', function (filename, contents) {
@@ -196,14 +220,24 @@ io.sockets.on('connection', function (socket) {
 	});
 	socket.on('make-project', function (filename, contents) {
 		new_random_url(function (url) {
-			var new_project = { projid : url.replace("/p/", ""), files : [] };
+			var new_project = { projid : url.replace("/p/", ""), files : [ { name : filename, contents: contents } ] };
 			projects.insert(new_project, { w : 1 }, function (err, result) {
 				socket.emit('project-ready', url);
 			});
 		});
 	});
+	socket.on('ping', function () {
+		var i = sockets.length;
+		while (i--)
+		{
+			if (sockets[i]["username"] == socket.username)
+			{
+				sockets[i]["pinged"] = true;
+			}
+		}
+	});
 });
-var tid = setInterval(function () {
+setInterval(function () {
 	var i = opendocuments.length;
 	while (i--)
 	{
@@ -227,6 +261,23 @@ var tid = setInterval(function () {
 	}
 }, 10000);
 
+setInterval(function () {
+	var i = sockets.length;
+	while (i--)
+	{
+		if (sockets[i]["pinged"] == true)
+		{
+			sockets[i]["pinged"] = false;
+		}
+		else
+		{
+			io.sockets.in(sockets[i]["projid"]).emit("user-offline", sockets[i]["username"], null);
+			sockets.splice(i, 1);
+		}
+	}
+	io.sockets.emit("ping");
+}, 5000);
+
 app.configure(function () {
   app.use(connect.bodyParser());
   app.use(app.router);
@@ -239,12 +290,12 @@ server.listen(port);
 app.use('/public', express.static(__dirname + '/public'));
 
 app.get('/', function(request, response) {
+	response.sendfile("./index.html");
+});
+app.get('/new', function(request, response) {
 	new_random_url(function (url) {
 		response.redirect(url);
 	});
-});
-app.get('/alternate', function(request, response) {
-	response.sendfile("./index.html");
 });
 
 app.use(function(req, res, next) {
@@ -294,7 +345,21 @@ random_url = function () {
 };
 url_exists = function(url, cb) {
 	projects.find({ projid : url.replace("/p/", "") }).toArray(function (err, items) {
-		cb(items.length > 0, url);
+		if (err)
+		{
+			throw err;
+		}
+		else
+		{
+			if (items)
+			{
+				cb(items.length > 0, url);
+			}
+			else
+			{
+				cb(false, url);
+			}
+		}
 	});
 }
 new_random_url = function(cb) {
@@ -374,7 +439,7 @@ is_open = function (document) {
 		}
 	}
 	return false;
-}
+};
 remove_document = function (document) {
 	var i = opendocuments.length;
 	while (i--)
@@ -386,7 +451,7 @@ remove_document = function (document) {
 		}
 	}
 	return false;
-}
+};
 find_document = function (document) {
 	var i = opendocuments.length;
 	while (i--)
@@ -397,7 +462,19 @@ find_document = function (document) {
 		}
 	}
 	return null;
-}
+};
+map_filter = function (array, filter, f) {
+	var i = array.length;
+	while (i--)
+	{
+		if (filter(array[i]))
+		{
+			f(array[i]);
+			return true;
+		}
+	}
+	return false;
+};
 insert_document = function (docid, contents) {
 	opendocuments.push({ id: docid, document: new document.Document(contents)});
 }
