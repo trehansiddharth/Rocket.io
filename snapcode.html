@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>Snapcode: Code here, deploy anywhere</title>
+		<title>Snapcode: the fastest way to share code</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link href="/public/css/bootstrap.css" rel="stylesheet" />
 		<link href="/public/css/bootstrap.min.css" rel="stylesheet" />
 		<link href="/public/snapcode.css" rel="stylesheet" />
 		<link href='http://fonts.googleapis.com/css?family=Cuprum' rel='stylesheet' type='text/css' />
@@ -14,117 +13,9 @@
 		<script src="http://code.jquery.com/jquery.min.js"></script>
 		<script src="/public/js/bootstrap.min.js"></script>
 		<script src="/public/ace/src/ace.js"></script>
-		<script async src="/public/ace/src/mode-haskell.js"></script>
-		<script async src="/public/ace/src/mode-abap.js"></script>
-		<script async src="/public/ace/src/mode-actionscript.js"></script>
-		<script async src="/public/ace/src/mode-ada.js"></script>
-		<script async src="/public/ace/src/mode-asciidoc.js"></script>
-		<script async src="/public/ace/src/mode-assembly_x86.js"></script>
-		<script async src="/public/ace/src/mode-autohotkey.js"></script>
-		<script async src="/public/ace/src/mode-batchfile.js"></script>
-		<script async src="/public/ace/src/mode-c9search.js"></script>
-		<script async src="/public/ace/src/mode-c_cpp.js"></script>
-		<script async src="/public/ace/src/mode-clojure.js"></script>
-		<script async src="/public/ace/src/mode-cobol.js"></script>
-		<script async src="/public/ace/src/mode-coffee.js"></script>
-		<script async src="/public/ace/src/mode-coldfusion.js"></script>
-		<script async src="/public/ace/src/mode-csharp.js"></script>
-		<script async src="/public/ace/src/mode-css.js"></script>
-		<script async src="/public/ace/src/mode-curly.js"></script>
-		<script async src="/public/ace/src/mode-dart.js"></script>
-		<script async src="/public/ace/src/mode-diff.js"></script>
-		<script async src="/public/ace/src/mode-django.js"></script>
-		<script async src="/public/ace/src/mode-d.js"></script>
-		<script async src="/public/ace/src/mode-dot.js"></script>
-		<script async src="/public/ace/src/mode-ejs.js"></script>
-		<script async src="/public/ace/src/mode-erlang.js"></script>
-		<script async src="/public/ace/src/mode-forth.js"></script>
-		<script async src="/public/ace/src/mode-ftl.js"></script>
-		<script async src="/public/ace/src/mode-glsl.js"></script>
-		<script async src="/public/ace/src/mode-golang.js"></script>
-		<script async src="/public/ace/src/mode-groovy.js"></script>
-		<script async src="/public/ace/src/mode-haml.js"></script>
-		<script async src="/public/ace/src/mode-handlebars.js"></script>
-		<script async src="/public/ace/src/mode-haskell.js"></script>
-		<script async src="/public/ace/src/mode-haxe.js"></script>
-		<script async src="/public/ace/src/mode-html_completions.js"></script>
-		<script async src="/public/ace/src/mode-html.js"></script>
-		<script async src="/public/ace/src/mode-html_ruby.js"></script>
-		<script async src="/public/ace/src/mode-ini.js"></script>
-		<script async src="/public/ace/src/mode-jack.js"></script>
-		<script async src="/public/ace/src/mode-jade.js"></script>
-		<script async src="/public/ace/src/mode-java.js"></script>
-		<script async src="/public/ace/src/mode-javascript.js"></script>
-		<script async src="/public/ace/src/mode-jsoniq.js"></script>
-		<script async src="/public/ace/src/mode-json.js"></script>
-		<script async src="/public/ace/src/mode-jsp.js"></script>
-		<script async src="/public/ace/src/mode-jsx.js"></script>
-		<script async src="/public/ace/src/mode-julia.js"></script>
-		<script async src="/public/ace/src/mode-latex.js"></script>
-		<script async src="/public/ace/src/mode-less.js"></script>
-		<script async src="/public/ace/src/mode-liquid.js"></script>
-		<script async src="/public/ace/src/mode-lisp.js"></script>
-		<script async src="/public/ace/src/mode-livescript.js"></script>
-		<script async src="/public/ace/src/mode-logiql.js"></script>
-		<script async src="/public/ace/src/mode-lsl.js"></script>
-		<script async src="/public/ace/src/mode-lua.js"></script>
-		<script async src="/public/ace/src/mode-luapage.js"></script>
-		<script async src="/public/ace/src/mode-lucene.js"></script>
-		<script async src="/public/ace/src/mode-makefile.js"></script>
-		<script async src="/public/ace/src/mode-markdown.js"></script>
-		<script async src="/public/ace/src/mode-matlab.js"></script>
-		<script async src="/public/ace/src/mode-mushcode_high_rules.js"></script>
-		<script async src="/public/ace/src/mode-mushcode.js"></script>
-		<script async src="/public/ace/src/mode-mysql.js"></script>
-		<script async src="/public/ace/src/mode-nix.js"></script>
-		<script async src="/public/ace/src/mode-objectivec.js"></script>
-		<script async src="/public/ace/src/mode-ocaml.js"></script>
-		<script async src="/public/ace/src/mode-pascal.js"></script>
-		<script async src="/public/ace/src/mode-perl.js"></script>
-		<script async src="/public/ace/src/mode-pgsql.js"></script>
-		<script async src="/public/ace/src/mode-php.js"></script>
-		<script async src="/public/ace/src/mode-plain_text.js"></script>
-		<script async src="/public/ace/src/mode-powershell.js"></script>
-		<script async src="/public/ace/src/mode-prolog.js"></script>
-		<script async src="/public/ace/src/mode-properties.js"></script>
-		<script async src="/public/ace/src/mode-protobuf.js"></script>
-		<script async src="/public/ace/src/mode-python.js"></script>
-		<script async src="/public/ace/src/mode-rdoc.js"></script>
-		<script async src="/public/ace/src/mode-rhtml.js"></script>
-		<script async src="/public/ace/src/mode-r.js"></script>
-		<script async src="/public/ace/src/mode-ruby.js"></script>
-		<script async src="/public/ace/src/mode-rust.js"></script>
-		<script async src="/public/ace/src/mode-sass.js"></script>
-		<script async src="/public/ace/src/mode-scad.js"></script>
-		<script async src="/public/ace/src/mode-scala.js"></script>
-		<script async src="/public/ace/src/mode-scheme.js"></script>
-		<script async src="/public/ace/src/mode-scss.js"></script>
-		<script async src="/public/ace/src/mode-sh.js"></script>
-		<script async src="/public/ace/src/mode-sjs.js"></script>
-		<script async src="/public/ace/src/mode-snippets.js"></script>
-		<script async src="/public/ace/src/mode-soy_template.js"></script>
-		<script async src="/public/ace/src/mode-space.js"></script>
-		<script async src="/public/ace/src/mode-sql.js"></script>
-		<script async src="/public/ace/src/mode-stylus.js"></script>
-		<script async src="/public/ace/src/mode-svg.js"></script>
-		<script async src="/public/ace/src/mode-tcl.js"></script>
-		<script async src="/public/ace/src/mode-tex.js"></script>
-		<script async src="/public/ace/src/mode-textile.js"></script>
-		<script async src="/public/ace/src/mode-text.js"></script>
-		<script async src="/public/ace/src/mode-tmsnippet.js"></script>
-		<script async src="/public/ace/src/mode-toml.js"></script>
-		<script async src="/public/ace/src/mode-twig.js"></script>
-		<script async src="/public/ace/src/mode-typescript.js"></script>
-		<script async src="/public/ace/src/mode-vbscript.js"></script>
-		<script async src="/public/ace/src/mode-velocity.js"></script>
-		<script async src="/public/ace/src/mode-verilog.js"></script>
-		<script async src="/public/ace/src/mode-vhdl.js"></script>
-		<script async src="/public/ace/src/mode-xml.js"></script>
-		<script async src="/public/ace/src/mode-xquery.js"></script>
-		<script async src="/public/ace/src/mode-yaml.js"></script>
 		<script src="/public/snapcode.js"></script>
 		<script src="/socket.io/socket.io.js"></script>
-		<script async src="/public/ace/src/ext-modelist.js"></script>
+		<script src="/public/ace/src/ext-modelist.js"></script>
 		<table id="page" class="fillx filly">
 			<tr class="row-navbar">
 				<td colspan="3" class="bar navbar navbar-static-top navbar-inverse navbar-default">
@@ -134,7 +25,13 @@
 								<li><a id="brand" class="pointing">Snapcode</a></li>
 							<ul>
 						</div>
-						<div class="collapse navbar-collapse">
+						<div class="pull-right nav-btns">
+							<div class="btn-group">
+								<a type="button" onclick="return opensync();" class="btn btn-success btn-sm"><i class="glyphicon glyphicon-refresh"></i> Sync</a>
+								<a href="/auth" type="button" class="btn btn-primary btn-sm"><i class="glyphicon glyphicon-log-in"></i> Sign in</a>
+							</div>
+						</div>
+						<!--<div class="collapse navbar-collapse">
 							<ul class="nav navbar-nav navbar-right">
 								<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-flash"></i> SnapSync <b class="caret"></b></a>
 									<ul class="dropdown-menu">
@@ -145,10 +42,14 @@
 										<li><a id="syncsetup" class="pointing" onclick="return opensettings();"><i class="glyphicon glyphicon-cog"></i> Sync Settings...</a></li>
 									</ul>
 								</li>
-								<li class="dropdown"><a class="pointing"><i class="glyphicon glyphicon-user"></i> <span id="login-username">Sign in</span></b></a>
+								<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span id="login-username"><i class="glyphicon glyphicon-log-in"></i> Sign in</span></b></a>
+									<ul class="dropdown-menu">
+										<!--<li><a href="/auth/facebook">With Facebook</a></li>--><!--
+										<li><a href="/auth/google">With Google</a></li>
+									</ul>
 								</li>
 							</ul>
-						</div>
+						</div>-->
 					</div>
 				</td>
 			</tr>
@@ -159,18 +60,7 @@
 							<td>
 								<div class="super-select fillx filly scrollable">
 									<div id="files">
-										<!--<div class="section fillx"><p>FILES</p></div>-->
 									</div>
-									<!--<div class="add-file item fillx">
-										<table>
-											<td>
-												<i class="glyphicon glyphicon-plus"></i>
-											</td>
-											<td class="item-main">
-												Add file...
-											</td>
-										</table>
-									</div>-->
 								</div>
 							</td>
 						</tr>
@@ -192,18 +82,8 @@
 						<table id="start" class="invisible-element fillx filly">
 							<tr id="start-text" class="filly">
 								<td class="fillx filly">
-									<div id="empty">
-										<h1>You don't have any files yet</h1><br />
-										<p><a id="uploadlink" class="pointing">Upload a file</a> or copy and paste your code to get started.</p><br />
-									</div>
-									<div id="notempty" class="invisible-element">
-										<h1>Add file</h1><br />
-									</div>
-									<textarea id="cpfile" class="form-control centerx" rows="9" placeholder="Copy & paste your code here (leave empty to create a blank file)"></textarea> <br />
-									<form class="form-inline">
-										<input id="filename" type="text" class="form-control" placeholder="File name"></input>
-									</form> <br />
-									<button id="makeproject" type="button" class="btn btn-success btn-lg">Add file to project</button>
+									<h2>You don't have any files :(</h2><br />
+									<button id="uploadlink" type="button" class="btn btn-primary btn-lg">Upload Code</button>
 								</td>
 							</tr>
 						</table>
@@ -226,7 +106,8 @@
 						</tr>
 						<tr>
 							<td>
-								<p id="username"></p>
+								<input type="text" id="username-edit" class="invisible-element" />
+								<p id="username" class="pointing"></p>
 							</td>
 						</tr>
 						<tr>

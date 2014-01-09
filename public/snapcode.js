@@ -1,4 +1,8 @@
 $(document).ready(function () {
+	if (window.location.hash && window.location.hash == '#_=_')
+	{
+		window.location.replace(window.location.split('#')[0]);
+	}
 	url = $(location).attr('href');
 	var parsed = url.split('/');
 	
@@ -11,6 +15,10 @@ $(document).ready(function () {
 		var uploading = true;
 		var reader = new FileReader();
 		projid = parsed[parsed.length - 1];
+		if (projid.indexOf("#") > -1)
+		{
+			projid = projid.slice(0, projid.indexOf("#"));
+		}
 		hostid = parsed[2];
 		var lastfile = null;
 		var inserted = false;
@@ -24,6 +32,14 @@ $(document).ready(function () {
 		sessions = [];
 		users = [];
 		sections = [];
+		modes = [];
+		
+		var cuser = getCookie("username");
+		
+		if (cuser != "")
+		{
+			$("#login-username").html("<i class=\"glyphicon glyphicon-user\"></i> " + unescape(cuser).split(" ")[0]);
+		}
 		
 		dom_files = $("#files");
 		dom_editor = $("#editor");
@@ -44,34 +60,37 @@ $(document).ready(function () {
 				lastfile = filename;
 			}
 			insert_file(filename);
-			var modename = require("ace/ext/modelist").getModeForPath(filename).mode;
-			var modeobj = require(modename).Mode;
-			var item = $("#item-" + filename.replace(".", "\\."));
-			var session = ace.createEditSession(contents, new modeobj());
-			sessions.push({filename : filename, session: session, item : item});
-			item.hover(function () {
-				select_file(this.id.substr(5));
-				// open hover file settings
-			}, function () { /* close hover file settings */ });
-			item.find("#cog").click(function () {
-				var thisfile = this.parentNode.parentNode.parentNode.parentNode.id.substr(5);
-				console.log(thisfile);
-				settingsfile = thisfile;
-				$("#file-name").val(thisfile);
-				if (syncing)
-				{
-					$("#sync-with").prop('disabled', false);
+			var moden = require("ace/ext/modelist").getModeForPath(filename).mode;
+			console.log("MODE: " + moden);
+			make_mode(moden, function (modename) {
+				var item = $("#item-" + filename.replace(".", "\\."));
+				var modeobj = require(modename).Mode;
+				var session = ace.createEditSession(contents, new modeobj());
+				sessions.push({filename : filename, session: session, item : item});
+				item.hover(function () {
+					select_file(this.id.substr(5));
+					// open hover file settings
+				}, function () { /* close hover file settings */ });
+				item.find("#cog").click(function () {
+					var thisfile = this.parentNode.parentNode.parentNode.parentNode.id.substr(5);
+					console.log(thisfile);
+					settingsfile = thisfile;
+					$("#file-name").val(thisfile);
+					if (syncing)
+					{
+						$("#sync-with").prop('disabled', false);
 					
-					syncsocket.emit('get-sync', thisfile);
-				}
-				else
-				{
-					$("#sync-with").prop('disabled', true);
-					$("#sync-with").val("You need to have SnapSync installed for this to work");
-				}
-				$("#file-settings").modal();
+						syncsocket.emit('get-sync', thisfile);
+					}
+					else
+					{
+						$("#sync-with").prop('disabled', true);
+						$("#sync-with").val("You need to have SnapSync installed for this to work");
+					}
+					$("#file-settings").modal();
+				});
+				socket.emit("socket-ok");
 			});
-			socket.emit("socket-ok");
 		});
 		socket.on("remove-file", function (filename) {
 			var session = fetch_session(filename);
@@ -98,8 +117,15 @@ $(document).ready(function () {
 				dom_addfile.addClass("selected");
 			}
 			if (!myname)
-			{	
-				socket.emit('random-username');
+			{
+				if (cuser == "")
+				{
+					socket.emit('random-username');
+				}
+				else
+				{
+					socket.emit("update-username", unescape(cuser));
+				}
 			}
 		});
 		socket.on("connection-ok", function () {
@@ -155,7 +181,7 @@ $(document).ready(function () {
 			socket.emit('update-username', username);
 		});		
 		socket.on('update-username', function (username) {
-			$("#username").append(html_username(username));
+			$("#username").html(html_username(username));
 			//$("#login-username").text(username);
 			myname = username;
 		});
@@ -226,6 +252,35 @@ $(document).ready(function () {
 			{
 				socket.emit('send-chat', $('#message').val());
 				$('#message').val('');
+			}
+		});
+		$("#username").click(function () {
+			$("#username-edit").val(myname);
+			$("#username").addClass("invisible-element");
+			$("#username-edit").removeClass("invisible-element");
+			$("#username-edit").focus();
+			$("#username-edit").select();
+		});
+		$("#username-edit").blur(function () {
+			var username = $("#username-edit").val();
+			if (username != myname)
+			{
+				socket.emit('update-username', username);
+			}
+			$("#username-edit").addClass("invisible-element");
+			$("#username").removeClass("invisible-element");
+		});
+		$('#username-edit').keyup(function(e) {
+			var code = e.keyCode || e.which;
+			if (code == 13)
+			{
+				var username = $("#username-edit").val();
+				if (username != myname)
+				{
+					socket.emit('update-username', username);
+				}
+				$("#username-edit").addClass("invisible-element");
+				$("#username").removeClass("invisible-element");
 			}
 		});
 		
@@ -531,7 +586,7 @@ function html_file(filename)
 }
 function html_username(username)
 {
-	return " <span class=\"tool-text\">" + username + "</span>";
+	return " <span class=\"tool-text\">" + username.replace("_", " ") + "</span>";
 }
 function html_chat(talkerclass, username)
 {
@@ -539,7 +594,7 @@ function html_chat(talkerclass, username)
 }
 function html_user(username)
 {
-	return "<p id=\"" + username.replace(" ", "_") + "\"class=\"green\"><i class=\"glyphicon glyphicon-user\"></i> " + username + "</p>";
+	return "<p id=\"" + username.replace(" ", "_") + "\"class=\"green\"><i class=\"glyphicon glyphicon-user\"></i> " + username.replace("_", " ") + "</p>";
 }
 insert_file = function (filename) {
 	var index = filename.indexOf(".");
@@ -580,6 +635,39 @@ select_file = function (filename) {
 	editor.setSession(session["session"]);
 	editor.focus();
 };
+make_mode = function (modename, cb) {
+	if (!contains(modename, modes))
+	{
+		modefile = "/public/ace/src/mode-" + modename.slice(9) + ".js";
+		$.ajax({
+			url: modefile,
+			dataType: 'script',
+			cache: true,
+			success: function() {
+				modes.push(modename);
+				cb(modename);
+			}
+		});
+	}
+	else
+	{
+		cb(modename);
+	}
+};
+function getCookie(cname)
+{
+	var name = cname + "=";
+	var ca = document.cookie.split(';');
+	for (var i = 0; i < ca.length; i++) 
+	{
+		var c = ca[i].trim();
+		if (c.indexOf(name) == 0)
+		{
+			return c.substring(name.length, c.length);
+		}
+	}
+	return "";
+}
 contains = function (a, obj) {
     var i = a.length;
     while (i--)

@@ -1,16 +1,54 @@
 var http		= require("http"),
+	https		= require("https"),
 	url			= require("url"),
 	fs			= require("fs"),
 	express		= require("express"),
-	connect 	= require("connect"),
+	connect    	= require("connect"),
 	JSZip		= require("node-zip"),
-	mongodb		= require("mongodb");
+	mongodb		= require("mongodb"),
+	passport	= require("passport"),
+	librequest	= require("request"),
 	document	= require("./document/document");
 
-var projects = null;
+var FacebookStrategy = require('passport-facebook').Strategy,
+	GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
-config = fs.readFileSync('./config.ignore').toString().split("\n");
-mongodb_uri = config[0];
+var config = fs.readFileSync('./config.ignore').toString().split("\n");
+var mongodb_uri = config[0];
+var clientID = config[1];
+var clientSecret = config[2];
+var sessionsecret = config[3];
+var googleid = config[4];
+var googlesecret = config[5];
+
+passport.use(new FacebookStrategy({
+        clientID: clientID,
+        clientSecret: clientSecret,
+        callbackURL: "/login/facebook"
+    },
+    function(accessToken, refreshToken, profile, done) {
+        done(null, { accessToken : accessToken, refreshToken : refreshToken, profile : profile });
+}));
+passport.use(new GoogleStrategy({
+        clientID: googleid,
+        clientSecret: googlesecret,
+        callbackURL: "/login/google"
+    },
+    function(accessToken, refreshToken, profile, done) {
+        done(null, { accessToken : accessToken, refreshToken : refreshToken, profile : profile });
+}));
+
+passport.serializeUser(function(user, done) {
+    done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+    done(null, user);
+});
+
+var projects = null;
+var users = null;
+var testing = true;
 
 mongodb.MongoClient.connect(mongodb_uri, function (err, db) {
 	if (err)
@@ -20,16 +58,17 @@ mongodb.MongoClient.connect(mongodb_uri, function (err, db) {
 	else
 	{
 		projects = db.collection("projects");
+		users = db.collection("users");
 		console.log("Connected to database");
 	}
 });
 
-var port = parseInt(process.env.PORT, 10) || 8080;
+var port = parseInt(process.env.PORT, 10) || 80;
 
 var app = express();
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
-//io.set('log level', 1)
+io.set('log level', 1)
 
 var opendocuments = [];
 var sockets = [];
@@ -220,7 +259,7 @@ io.sockets.on('connection', function (socket) {
 	});
 	socket.on('make-project', function (filename, contents) {
 		new_random_url(function (url) {
-			var new_project = { projid : url.replace("/p/", ""), files : [ { name : filename, contents: contents } ] };
+			var new_project = { projid : url.replace("/p/", ""), files : [ { name : filename, contents: contents } ], testing : testing };
 			projects.insert(new_project, { w : 1 }, function (err, result) {
 				socket.emit('project-ready', url);
 			});
@@ -280,9 +319,13 @@ setInterval(function () {
 
 app.configure(function () {
   app.use(connect.bodyParser());
-  app.use(app.router);
   express.json();
   express.urlencoded();
+  app.use(express.cookieParser());
+  app.use(express.session({ secret: sessionsecret }));
+  app.use(passport.initialize());
+  app.use(passport.session());
+  app.use(app.router);
 });
 
 server.listen(port);
@@ -290,6 +333,11 @@ server.listen(port);
 app.use('/public', express.static(__dirname + '/public'));
 
 app.get('/', function(request, response) {
+	if (request.user)
+	{
+		response.cookie('username', request.user.profile.displayName, { maxAge: 900000, httpOnly: false});
+	}
+	request.lastpage = "/";
 	response.sendfile("./index.html");
 });
 app.get('/new', function(request, response) {
@@ -297,18 +345,159 @@ app.get('/new', function(request, response) {
 		response.redirect(url);
 	});
 });
+app.get('/auth', function (request, response) {
+	response.sendfile("./login.html");
+});
+
+app.get('/auth/facebook', passport.authenticate('facebook'));
+app.get('/login/facebook',
+	passport.authenticate('facebook', { failureRedirect: '/errlogin' }),
+	function (request, response) {
+		console.log(request.user);
+		response.redirect(request.session.lastpage);
+	}
+);
+
+app.get('/auth/google', passport.authenticate('google', {
+	scope : "https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.profile",
+	accessType: "offline",
+	approval_prompt : "force"
+}));
+app.get('/login/google',
+	passport.authenticate('google', { failureRedirect: '/errlogin' }),
+	function (request, response) {
+		//console.log(request.user);
+		users.findOne({ profileId : "g" + request.user.profile.id }, function (err, user) {
+			if (user)
+			{
+                request.user.refreshToken = user.refreshToken;
+                console.log(request.user.refreshToken);
+				if (request.session.lastpage)
+				{
+					response.redirect(request.session.lastpage);
+				}
+				else
+				{
+					response.redirect("/");
+				}
+			}
+			else
+			{
+				users.insert({
+					name : request.user.profile.displayName,
+					profileId : "g" + request.user.profile.id,
+					refreshToken : request.user.refreshToken,
+					accessToken : request.user.accessToken,
+					following : []
+				}, function (err, newuser) {
+					if (request.session.lastpage)
+					{
+						response.redirect(request.session.lastpage);
+					}
+					else
+					{
+						response.redirect("/");
+					}
+				});
+			}
+		});
+	}
+);
+
+app.get('/logout', function(request, response) {
+	request.logout();
+	response.redirect(request.session.lastpage);
+});
+
+app.get('/setup', function (request, response) {
+	if (request.user)
+	{
+        console.log(request.user.accessToken);
+		librequest({
+            method : "GET",
+            uri : "https://www.googleapis.com/plus/v1/people/" + request.user.profile.id + "/people/visible", 
+            qs : {
+                access_token : request.user.accessToken
+            }
+		}, function (err, res, body) {
+			var json_body = JSON.parse(body);
+			console.log(json_body.error);
+			if (json_body.error)
+			{
+                console.log("Trying refresh token: " + request.user.refreshToken);
+				librequest({
+                    method : "POST",
+                    uri : "https://accounts.google.com/o/oauth2/token",
+                    form : {
+                        refresh_token : request.user.refreshToken,
+                        client_id : googleid,
+                        client_secret : googlesecret,
+                        grant_type : "refresh_token"
+                    }
+				}, function (e, rs, bd) {
+					var json_bd = JSON.parse(bd);
+					if (err || json_bd.error)
+					{
+						response.end("/errlogin");
+						console.log("error with login, " + bd);
+					}
+					else
+					{
+                        console.log("bd: " + bd);
+						console.log("new access token acquired: " + json_bd.access_token);
+						request.user.accessToken = json_bd.access_token;
+						librequest({
+                            method : "GET",
+                            uri : "https://www.googleapis.com/plus/v1/people/" + request.user.profile.id + "/people/visible",
+                            qs : {
+                                access_token : request.user.accessToken
+                            }
+						}, function (newerr, newres, newbody) {
+							var json_newbody = JSON.parse(newbody);
+							if (!err && !json_newbody.error)
+							{
+								console.log(json_newbody);
+								response.end("done better!");
+							}
+                            else
+                            {
+                                console.log(json_newbody);
+                                response.end("fail!");
+                            }
+						});
+					}
+				});
+			}
+			else
+			{
+				console.log(json_body);
+				response.end("done!");
+			}
+		});
+	}
+	else
+	{
+		response.redirect("/errlogin");
+	}
+});
 
 app.use(function(req, res, next) {
 	if (req.path.substring(0, 3) == '/p/')
 	{
 		url_exists(req.path, function (exists, url) {
+			console.log(url);
+			req.session.lastpage = url;
+			if (req.user)
+			{
+				res.cookie('username', req.user.profile.displayName, { maxAge: 900000, httpOnly: false});
+			}
 			if (exists)
 			{
 				res.sendfile('./snapcode.html');
 			}
 			else
 			{
-				var new_project = { projid : url.replace("/p/", ""), files : [], testing: false };
+				var new_project = { projid : url.replace("/p/", ""), files : [], testing: testing };
 				projects.insert(new_project, { w : 1 }, function (err, result) {
 					res.sendfile('./snapcode.html');
 				});
@@ -323,6 +512,10 @@ app.use(function(req, res, next) {
 				res.sendfile('./sync.html');
 			}
 		});
+	}
+	else if (req.path.substring(0, 3) == '/x/')
+	{
+		
 	}
 	else
 	{
@@ -381,7 +574,7 @@ var nouns = fs.readFileSync('./accessory/nouns.txt').toString().split("\n");
 random_username = function () {
 	random1 = Math.floor(Math.random() * adjectives.length);
 	random2 = Math.floor(Math.random() * nouns.length);
-	return adjectives[random1] + " " + nouns[random2];
+	return adjectives[random1] + "_" + nouns[random2];
 };
 is_valid_filename = function (filename) {
 	return true;
@@ -477,4 +670,10 @@ map_filter = function (array, filter, f) {
 };
 insert_document = function (docid, contents) {
 	opendocuments.push({ id: docid, document: new document.Document(contents)});
-}
+};
+oauth_call = function (accessToken, refreshToken, url, response, cb) {
+	request.get(url, { access_token : accessToken }, function (err, res, body) {
+		console.log(res);
+		console.log(body);
+	});
+};

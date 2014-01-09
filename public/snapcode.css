@@ -106,6 +106,12 @@ td.bar {
 #username {
 	font-size: 1.2em;
 	text-align: center;
+	color: green;
+}
+#username-edit {
+	font-size: 1.2em;
+	text-align: center;
+	width: 100%;
 }
 #stream {
 	/*overflow: scroll;*/
@@ -161,6 +167,9 @@ div.scrollable {
 	font-family: 'Cuprum', sans-serif;
 	font-style: italic;
 	color: white;
+}
+.nav-btns {
+	padding-top: 3px;
 }
 #upload-text {
 	color: gray;

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Snapcode: the fastest way to share code</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link href="/public/css/bootstrap.min.css" rel="stylesheet" />
+		<link href="/public/index.css" rel="stylesheet" />
+		<link href='http://fonts.googleapis.com/css?family=Cuprum' rel='stylesheet' type='text/css'>
+	</head>
+	<body>
+		<script src="http://code.jquery.com/jquery.min.js"></script>
+		<script src="/public/js/bootstrap.min.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="/public/index.js"></script>
+		<table id="start" class="fillx filly">
+			<tr id="top-bar">
+				<!--<td id="top-middle"></td>-->
+				<td id="top-right"><span class="pointing"><i class="glyphicon glyphicon-log-in"></i> Sign In</span></td>
+			</tr>
+			<tr id="content" class="filly">
+				<td class="fillx filly">
+                    <p id="description">These friends are already using Snapcode. Who would you like to follow?</p>
+					<table id="friends">
+                        
+                    </table>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>

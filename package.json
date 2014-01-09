@@ -8,7 +8,12 @@
                 "connect": "x",
                 "node-zip": "1.0.x",
                 "delivery": "0.0.3",
-                "mongodb": "latest"
+                "mongodb": "latest",
+                "passport": "latest",
+                "passport-facebook": "latest",
+                "passport-google-oauth": "latest",
+                "passport-google-plus": "0.1.1",
+                "request": "latest"
         },
         "subdomain": "snapcode",
         "scripts": {
@@ -17,5 +22,5 @@
         "engines": {
                 "node": "0.10.x"
         },
-        "version": "0.2.3"
+        "version": "0.3.0"
 }
