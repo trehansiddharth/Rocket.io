@@ -4,30 +4,27 @@
 		<title>Snapcode: the fastest way to share code</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link href="/public/css/bootstrap.min.css" rel="stylesheet" />
-		<link href="/public/setup.css" rel="stylesheet" />
+		<link href="/public/updates.css" rel="stylesheet" />
 		<link href='http://fonts.googleapis.com/css?family=Cuprum' rel='stylesheet' type='text/css'>
 	</head>
 	<body>
 		<script src="http://code.jquery.com/jquery.min.js"></script>
 		<script src="/public/js/bootstrap.min.js"></script>
 		<script src="/socket.io/socket.io.js"></script>
-		<script src="/public/setup.js"></script>
+		<script src="/public/updates.js"></script>
 		<table id="start" class="fillx filly">
 			<tr id="top-bar">
 				<!--<td id="top-middle"></td>-->
-				<td id="top-right"><span class="pointing"><i class="glyphicon glyphicon-log-in"></i> Sign In</span></td>
+				<td id="top-right"><a href="/auth"><i class="glyphicon glyphicon-log-in"></i> Sign In</a></td>
 			</tr>
 			<tr id="content">
 				<td class="fillx">
-                    <p id="description">These friends are already using Snapcode. Who would you like to follow?</p><br />
-                    <div id="friends-holder" class="scrollable">
-                        <table id="friends"><td>Loading...</td></table>
-                    </div>
-                    <button id="submit" type="button" class="btn btn-success btn-lg">Start Following</button>
+					<h1 id="brand">Snapcode</h1>
+					<p id="slogan">The fastest way to share code</p><br />
+                    <table id="updates"></table>
 				</td>
 			</tr>
-            <tr class="filly">
-            </tr>
+            <tr class="filly"></tr>
 		</table>
 	</body>
 </html>

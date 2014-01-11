@@ -48,6 +48,7 @@ passport.deserializeUser(function(user, done) {
 
 var projects = null;
 var users = null;
+var updates = null;
 var testing = true;
 
 mongodb.MongoClient.connect(mongodb_uri, function (err, db) {
@@ -59,6 +60,7 @@ mongodb.MongoClient.connect(mongodb_uri, function (err, db) {
 	{
 		projects = db.collection("projects");
 		users = db.collection("users");
+        updates = db.collection("updates");
 		console.log("Connected to database");
 	}
 });
@@ -387,17 +389,10 @@ app.get('/login/google',
 					name : request.user.profile.displayName,
 					profileId : "g" + request.user.profile.id,
 					refreshToken : request.user.refreshToken,
-					accessToken : request.user.accessToken,
+                    picture : request.user.profile._json.picture;
 					following : []
 				}, function (err, newuser) {
-					if (request.session.lastpage)
-					{
-						response.redirect(request.session.lastpage);
-					}
-					else
-					{
-						response.redirect("/");
-					}
+					response.redirect("/setup");
 				});
 			}
 		});
@@ -409,22 +404,41 @@ app.get('/logout', function(request, response) {
 	response.redirect(request.session.lastpage);
 });
 
-app.get('/setup', function (request, response) {
-	if (request.user)
+app.get('/lastpage', function (request, response) {
+    if (request.session.lastpage)
+    {
+        response.redirect(request.session.lastpage);
+    }
+    else
+    {
+        response.redirect("/");
+    }
+});
+
+app.get("/setup", function (request, response) {
+    response.sendfile("./setup.html");
+});
+
+app.get("/updates", function (request, response) {
+    response.sendfile("./updates.html");
+});
+
+app.get("/account/google/people", function (request, response) {
+    if (request.user)
 	{
-        console.log(request.user.accessToken);
+        //console.log(request.user.accessToken);
 		librequest({
             method : "GET",
-            uri : "https://www.googleapis.com/plus/v1/people/" + request.user.profile.id + "/people/visible", 
+            uri : "https://www.googleapis.com/plus/v1/people/" + request.user.profile.id + "/people/connected", // connected or visible
             qs : {
                 access_token : request.user.accessToken
             }
 		}, function (err, res, body) {
 			var json_body = JSON.parse(body);
-			console.log(json_body.error);
+			//console.log(json_body.error);
 			if (json_body.error)
 			{
-                console.log("Trying refresh token: " + request.user.refreshToken);
+                //console.log("Trying refresh token: " + request.user.refreshToken);
 				librequest({
                     method : "POST",
                     uri : "https://accounts.google.com/o/oauth2/token",
@@ -438,17 +452,17 @@ app.get('/setup', function (request, response) {
 					var json_bd = JSON.parse(bd);
 					if (err || json_bd.error)
 					{
-						response.end("/errlogin");
-						console.log("error with login, " + bd);
+						//console.log("error with login, " + bd);
+						response.end("ERROR: NOLOGIN");
 					}
 					else
 					{
-                        console.log("bd: " + bd);
-						console.log("new access token acquired: " + json_bd.access_token);
+                        //console.log("bd: " + bd);
+						//console.log("new access token acquired: " + json_bd.access_token);
 						request.user.accessToken = json_bd.access_token;
 						librequest({
                             method : "GET",
-                            uri : "https://www.googleapis.com/plus/v1/people/" + request.user.profile.id + "/people/visible",
+                            uri : "https://www.googleapis.com/plus/v1/people/" + request.user.profile.id + "/people/connected", // connected or visible
                             qs : {
                                 access_token : request.user.accessToken
                             }
@@ -456,13 +470,15 @@ app.get('/setup', function (request, response) {
 							var json_newbody = JSON.parse(newbody);
 							if (!err && !json_newbody.error)
 							{
-								console.log(json_newbody);
-								response.end("done better!");
+								//console.log(json_newbody);
+								//response.sendfile("./setup.html");
+                                response.end(newbody);
 							}
                             else
                             {
-                                console.log(json_newbody);
-                                response.end("fail!");
+                                //console.log(json_newbody);
+                                //response.redirect("/errlogin");
+                                response.end("ERROR: NOLOGIN");
                             }
 						});
 					}
@@ -470,15 +486,172 @@ app.get('/setup', function (request, response) {
 			}
 			else
 			{
-				console.log(json_body);
-				response.end("done!");
+				//console.log(json_body);
+				//response.sendfile("./setup.html");
+                response.end(body);
 			}
 		});
 	}
 	else
 	{
-		response.redirect("/errlogin");
+		//response.redirect("/errlogin");
+        response.end("ERROR: NOLOGIN");
 	}
+});
+app.post('/account/google/follow', function (request, response) {
+    if (request.user && request.body.ids)
+    {
+        var following = request.body.ids.split(" ");
+        users.update( { profileId : "g" + request.user.profile.id }, { $push : { following : { $each : following } } }, function (err, user) {
+            if (err)
+            {
+                response.end("ERROR: DATABASE_ERROR");
+            }
+            else
+            {
+                response.end("OK");
+            }
+        });
+    }
+    else
+    {
+        response.end("ERROR: UNIDENTIFIED");
+    }
+});
+
+app.post('/updates/post/project', function (request, response) {
+    updates.insert({ projid : request.body.projid, user : "g" + request.user.profile.id, event : "CREATE_PROJECT" }, function (err, project) {
+        if (err)
+        {
+            response.end("ERROR: DATABASE_ERROR");
+        }
+        else
+        {
+            response.end("OK");
+        }
+    });
+});
+app.post('/updates/post/project/follow', function (request, response) {
+    if (request.user)
+    {
+        updates.insert({ projid : request.body.projid, user : "g" + request.user.profile.id, event : "FOLLOW_PROJECT" }, function (err, project) {
+            if (err)
+            {
+                response.end("ERROR: DATABASE_ERROR");
+            }
+            else
+            {
+                response.end("OK");
+            }
+        });
+    }
+    else
+    {
+        response.end("ERROR: NOLOGIN");
+    }
+});
+app.post('/updates/post/project/unfollow', function (request, response) {
+    if (request.user)
+    {
+        updates.remove({ projid : request.body.projid, user : "g" + request.user.profile.id, event : "FOLLOW_PROJECT" }, function (err, project) {
+            if (err)
+            {
+                response.end("ERROR: DATABASE_ERROR");
+            }
+            else
+            {
+                response.end("OK");
+            }
+        });
+    }
+    else
+    {
+        response.end("ERROR: NOLOGIN");
+    }
+});
+app.post('/updates/query/project/following', function (request, response) {
+    if (request.user)
+    {
+        updates.findOne({ projid : request.body.projid, user : "g" + request.user.profile.id, event : "FOLLOW_PROJECT" }, function (err, project) {
+            if (project)
+            {
+                response.end("TRUE");
+            }
+            else
+            {
+                response.end("FALSE");
+            }
+        });
+    }
+    else
+    {
+        response.end("ERROR: NOLOGIN");
+    }
+});
+app.get('/updates/get', function (request, response) {
+    if (request.user)
+    {
+        updates.find().toArray(function (err, updates) {
+            if (err)
+            {
+                response.end("ERROR: DATABASE_ERROR");
+            }
+            else
+            {
+                response.end(JSON.stringify(updates));
+            }
+        });
+    }
+    else
+    {
+        response.end("ERROR: NOLOGIN");
+    }
+});
+app.get('/user/query/login', function (request, response) {
+    if (request.user)
+    {
+        response.end("TRUE");
+    }
+    else
+    {
+        response.end("FALSE");
+    }
+});
+app.get('/user/profile/me', function (request, response) {
+    if (request.user)
+    {
+        response.end(JSON.stringify(request.user.profile));
+    }
+    else
+    {
+        response.end("ERROR: NOLOGIN");
+    }
+});
+app.post('/user/profile', function (request, response) {
+    if (request.user)
+    {
+        users.findOne({ profileId : request.body.id }, function (err, user) {
+            if (err)
+            {
+                response.end("ERROR: DATABASE_ERROR");
+            }
+            else
+            {
+                if (user)
+                {
+                    response.end(JSON.stringify(user));
+                }
+                else
+                {
+                    response.end("ERROR: USER_NOT_FOUND");
+                }
+            }
+        });
+    }
+    else
+    {
+        response.end("ERROR: NOLOGIN");
+    }
 });
 
 app.use(function(req, res, next) {
@@ -487,10 +660,10 @@ app.use(function(req, res, next) {
 		url_exists(req.path, function (exists, url) {
 			console.log(url);
 			req.session.lastpage = url;
-			if (req.user)
+			/*if (req.user)
 			{
 				res.cookie('username', req.user.profile.displayName, { maxAge: 900000, httpOnly: false});
-			}
+			}*/
 			if (exists)
 			{
 				res.sendfile('./snapcode.html');

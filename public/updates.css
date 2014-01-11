@@ -25,6 +25,7 @@ html, body {
 div.scrollable {
     overflow: auto;
     position: relative;
+    /*border: solid;*/
 }
 #filename {
 	width: 700px;
@@ -42,46 +43,41 @@ div.scrollable {
 	height: 100%;
 	background-color: #F0F0E8;
 }
+#start-text {
+	height: 100vh;
+	color: gray;
+}
+#updates {
+    text-align: left;
+    margin-left: 20px;
+    margin-right: 50px;
+}
+.update {
+    outline: 1px solid gray;
+    margin: 20px;
+}
+img {
+    height: 70px;
+}
+.picture {
+    /*width: 50px;*/
+}
+.text {
+    width: 100%;
+    background-color: white;
+    padding: 10px;
+}
 #content {
 	/*height: 100vh;*/
     margin-top: 0;
 	color: gray;
 	text-align: center;
 }
-#friends-holder {
-    height: 450px;
-}
-#friends {
-    margin-top: 0;
-    margin-left: auto;
-    margin-right: auto;
-}
-.friend {
-    outline: thin solid gray;
-    background-color: white;
-    margin: 3px;
-}
-.friend > td {
-    padding: 5px
-}
 .spacer {
-    height: 4px;
-}
-.selected {
-    background-color: #aff5a3;
-    outline: 2px solid gray;
+    height: 9px;
 }
 .hovered {
     outline: 2px solid gray;
-}
-.name {
-    font-size: 1.2em;
-    width: 200px;
-    text-align: left;
-    /*color: black;*/
-}
-#submit {
-    text-align: right;
 }
 /*#top-middle {
 	width: 100%;

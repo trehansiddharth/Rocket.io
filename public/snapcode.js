@@ -11,7 +11,7 @@ $(document).ready(function () {
 		editor = ace.edit("editor");
 		var Range = ace.require('ace/range').Range;
 		var Selection = ace.require('ace/selection').Selection;
-		editor.setFontSize(15);
+		editor.setFontSize(13);
 		var uploading = true;
 		var reader = new FileReader();
 		projid = parsed[parsed.length - 1];
@@ -29,6 +29,9 @@ $(document).ready(function () {
 		var settingsfile = null;
 		var onlyyou = true;
 		var changingsession = true;
+        var promoted = false;
+        var promoting = false;
+        insync = false;
 		sessions = [];
 		users = [];
 		sections = [];
@@ -38,7 +41,6 @@ $(document).ready(function () {
 		
 		if (cuser != "")
 		{
-			$("#login-username").html("<i class=\"glyphicon glyphicon-user\"></i> " + unescape(cuser).split(" ")[0]);
 		}
 		
 		dom_files = $("#files");
@@ -118,14 +120,82 @@ $(document).ready(function () {
 			}
 			if (!myname)
 			{
-				if (cuser == "")
-				{
-					socket.emit('random-username');
-				}
-				else
-				{
-					socket.emit("update-username", unescape(cuser));
-				}
+                $.get("/user/query/login", function (data) {
+                    if (data == "TRUE")
+                    {
+                        $.get("/user/profile/me", function (data) {
+                            var profile = jQuery.parseJSON(data);
+                            socket.emit("update-username", profile.displayName);
+                            $("#signin").html("<i class=\"glyphicon glyphicon-user\"></i> " + profile.displayName);
+                            $("#signin").click(function () {
+                                
+                            });
+                        });
+                        $.post("/updates/query/project/following", { projid : projid }, function (data) {
+                            if (data.slice(0, 5) == "ERROR")
+                            {
+                                console.log(data);
+                            }
+                            else
+                            {
+                                if (data == "TRUE")
+                                {
+                                    $("#promote").html("<i class=\"glyphicon glyphicon-star\"></i> Following");
+                                    promoted = true;
+                                }
+                                else
+                                {
+                                    $("#promote").html("<i class=\"glyphicon glyphicon-star-empty\"></i> Follow");
+                                    promoted = false;
+                                }
+                                $("#promote").click(function () {
+                                    $(this).append("...");
+                                    if (!promoting)
+                                    {
+                                        if (promoted)
+                                        {
+                                            $.post("/updates/post/project/unfollow", { projid : projid }, function (data) {
+                                                if (data == "OK")
+                                                {
+                                                    $("#promote").html("<i class=\"glyphicon glyphicon-star-empty\"></i> Follow");
+                                                    promoting = false;
+                                                    promoted = false;
+                                                }
+                                                else
+                                                {
+                                                    
+                                                }
+                                            });
+                                        }
+                                        else
+                                        {
+                                            $.post("/updates/post/project/follow", { projid : projid }, function (data) {
+                                                if (data == "OK")
+                                                {
+                                                    $("#promote").html("<i class=\"glyphicon glyphicon-star\"></i> Following");
+                                                    promoting = false;
+                                                    promoted = true;
+                                                }
+                                                else
+                                                {
+                                                    
+                                                }
+                                            });
+                                        }
+                                        promoting = true;
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    else
+                    {
+                        socket.emit('random-username');
+                        $("#signin").click(function () {
+                            window.location = "/auth";
+                        });
+                    }
+                });
 			}
 		});
 		socket.on("connection-ok", function () {
@@ -136,6 +206,11 @@ $(document).ready(function () {
 			inserted = true;
 			var sess = fetch_session(filename)["session"];
 			sess.getDocument().applyDeltas([change]);
+            if (insync)
+            {
+                $("#opensync").html("<i class=\"glyphicon glyphicon-refresh\"></i> Sync");
+                insync = false;
+            }
 			inserted = false;
 		});
 		editor.on('change', function (e) {
@@ -144,6 +219,11 @@ $(document).ready(function () {
 			{
 				socket.emit('file-change', currentfile, change);
 				changed = true;
+                if (insync)
+                {
+                    $("#opensync").html("<i class=\"glyphicon glyphicon-refresh\"></i> Sync");
+                    insync = false;
+                }
 			}
 		});
 		socket.on('cursor-change', function (username, oldfile, newfile, position) {
@@ -475,6 +555,8 @@ function opensync()
 			var sess = sessions[i];
 			syncsocket.emit("update-file", sessions[i]["filename"], sessions[i]["session"].getDocument().getValue());
 		}
+        $("#opensync").html("<i class=\"glyphicon glyphicon-ok\"></i> Synced");
+        insync = true;
 	}
 	else
 	{
