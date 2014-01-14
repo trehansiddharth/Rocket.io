@@ -335,12 +335,15 @@ server.listen(port);
 app.use('/public', express.static(__dirname + '/public'));
 
 app.get('/', function(request, response) {
+	request.session.lastpage = "/";
 	if (request.user)
 	{
-		response.cookie('username', request.user.profile.displayName, { maxAge: 900000, httpOnly: false});
+		response.sendfile("./updates.html");
 	}
-	request.lastpage = "/";
-	response.sendfile("./index.html");
+    else
+    {
+        response.sendfile("./index.html");
+    }
 });
 app.get('/new', function(request, response) {
 	new_random_url(function (url) {
@@ -389,7 +392,7 @@ app.get('/login/google',
 					name : request.user.profile.displayName,
 					profileId : "g" + request.user.profile.id,
 					refreshToken : request.user.refreshToken,
-                    picture : request.user.profile._json.picture;
+                    picture : request.user.profile._json.picture,
 					following : []
 				}, function (err, newuser) {
 					response.redirect("/setup");
@@ -401,7 +404,14 @@ app.get('/login/google',
 
 app.get('/logout', function(request, response) {
 	request.logout();
-	response.redirect(request.session.lastpage);
+    if (request.session.lastpage)
+    {
+	   response.redirect(request.session.lastpage);
+    }
+    else
+    {
+        response.redirect("/");
+    }
 });
 
 app.get('/lastpage', function (request, response) {
@@ -534,7 +544,7 @@ app.post('/updates/post/project', function (request, response) {
 app.post('/updates/post/project/follow', function (request, response) {
     if (request.user)
     {
-        updates.insert({ projid : request.body.projid, user : "g" + request.user.profile.id, event : "FOLLOW_PROJECT" }, function (err, project) {
+        updates.insert({ projid : request.body.projid, user : "g" + request.user.profile.id, event : "FOLLOW_PROJECT", time : Date() }, function (err, project) {
             if (err)
             {
                 response.end("ERROR: DATABASE_ERROR");
@@ -589,23 +599,16 @@ app.post('/updates/query/project/following', function (request, response) {
     }
 });
 app.get('/updates/get', function (request, response) {
-    if (request.user)
-    {
-        updates.find().toArray(function (err, updates) {
-            if (err)
-            {
-                response.end("ERROR: DATABASE_ERROR");
-            }
-            else
-            {
-                response.end(JSON.stringify(updates));
-            }
-        });
-    }
-    else
-    {
-        response.end("ERROR: NOLOGIN");
-    }
+    updates.find().toArray(function (err, updates) {
+        if (err)
+        {
+            response.end("ERROR: DATABASE_ERROR");
+        }
+        else
+        {
+            response.end(JSON.stringify(updates));
+        }
+    });
 });
 app.get('/user/query/login', function (request, response) {
     if (request.user)
@@ -628,30 +631,23 @@ app.get('/user/profile/me', function (request, response) {
     }
 });
 app.post('/user/profile', function (request, response) {
-    if (request.user)
-    {
-        users.findOne({ profileId : request.body.id }, function (err, user) {
-            if (err)
+    users.findOne({ profileId : request.body.id }, function (err, user) {
+        if (err)
+        {
+            response.end("ERROR: DATABASE_ERROR");
+        }
+        else
+        {
+            if (user)
             {
-                response.end("ERROR: DATABASE_ERROR");
+                response.end(JSON.stringify(user));
             }
             else
             {
-                if (user)
-                {
-                    response.end(JSON.stringify(user));
-                }
-                else
-                {
-                    response.end("ERROR: USER_NOT_FOUND");
-                }
+                response.end("ERROR: USER_NOT_FOUND");
             }
-        });
-    }
-    else
-    {
-        response.end("ERROR: NOLOGIN");
-    }
+        }
+    });
 });
 
 app.use(function(req, res, next) {

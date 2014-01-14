@@ -6,7 +6,7 @@ html, body {
 	position: absolute;
 	padding: 0px;
 	/*overflow: hidden;*/
-	overflow-x: hidden;
+	/*overflow-x: hidden;*/
 }
 /*#page {
 	padding: 0px;
@@ -31,9 +31,16 @@ div.scrollable {
 	width: 700px;
 }
 #brand {
+	font-size: 2em;
+	font-family: 'Cuprum', sans-serif;
+	font-style: italic;
+    color: gray;
+}
+#brand-main {
 	font-size: 3em;
 	font-family: 'Cuprum', sans-serif;
 	font-style: italic;
+    color: gray;    
 }
 .invisible-element {
 	display: none !important;
@@ -48,46 +55,84 @@ div.scrollable {
 	color: gray;
 }
 #updates {
-    text-align: left;
-    margin-left: 20px;
+}
+#updates-holder {
+    margin-top: 10px;
+    margin-left: 30px;
     margin-right: 50px;
+    text-align: left;
+}
+#search {
+    width: 500px;
 }
 .update {
-    outline: 1px solid gray;
+    /*outline: 1px solid gray;*/
     margin: 20px;
 }
-img {
+.picture > img {
     height: 70px;
 }
 .picture {
     /*width: 50px;*/
 }
 .text {
-    width: 100%;
-    background-color: white;
+    vertical-align: middle;
+}
+tr.activity {
+    
+}
+td.activity {
     padding: 10px;
 }
-#content {
+tr.peripheral {
+}
+td.peripheral {
+    text-align: right;
+    padding-right: 10px;
+    font-size: 0.8em;
+}
+.time {
+    text-align: right;
+    font-size: 0.65em;
+}
+.update-inner * td {
+    white-space: nowrap;
+}
+#content > td {
 	/*height: 100vh;*/
-    margin-top: 0;
+    padding-top: 10px;
 	color: gray;
 	text-align: center;
 }
 .spacer {
     height: 9px;
 }
-.hovered {
+/*.hovered {
     outline: 2px solid gray;
-}
+}*/
 /*#top-middle {
 	width: 100%;
 }*/
+#top-bar {
+    height: 50px;
+}
+#top-left {
+    padding: 10px;
+    min-width: 220px;
+}
+#top-left > i {
+    font-size: 2em;
+    color: gray;
+}
+#top-middle {
+    padding-left: 10px;
+}
 #top-right {
-	padding-top: 12px;
 	padding-right: 20px;
 	font-size: 1.15em;
 	color: #858585;
 	text-align: right;
+    min-width: 220px;
 }
 #warning-glyph {
 	font-size: 3em;
