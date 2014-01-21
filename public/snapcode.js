@@ -36,12 +36,19 @@ $(document).ready(function () {
 		users = [];
 		sections = [];
 		modes = [];
+        
+        $("#projid").html(projid);
+        $("img.logo").click(function () {
+            location.href = "/";
+        });
 		
-		var cuser = getCookie("username");
-		
-		if (cuser != "")
-		{
-		}
+		$(".toolshed > i").hover(function () {
+            $(this).addClass("tool-hovered");
+        }, function () {
+            $(this).removeClass("tool-hovered");
+        });
+        
+        $("[data-toggle='tooltip']").tooltip();
 		
 		dom_files = $("#files");
 		dom_editor = $("#editor");
@@ -200,7 +207,74 @@ $(document).ready(function () {
 		});
 		socket.on("connection-ok", function () {
 			socket.emit("get-files");
+            socket.emit("get-properties");
 		});
+        socket.on("set-properties", function (properties) {
+            projname = properties.name;
+            projtag = properties.tagline;
+            if (projname)
+            {
+                $("#project-title").html(projname);
+            }
+            else
+            {
+                $("#project-title").text("Untitled Project");
+            }
+            if (projtag)
+            {
+                $("#project-tag").html("– " + projtag);
+            }
+            else
+            {
+                
+            }
+            $("#edit").click(function () {
+                if (projname)
+                {
+                    $("#project-name").val(projname);
+                }
+                if (projtag)
+                {
+                    $("#project-tagline").val(projtag);
+                }
+                $("#project-settings").modal();
+            });
+            $("#project-settings-save").click(function () {
+                var newname = $("#project-name").val();
+                var newtag = $("#project-tagline").val();
+                if (newname)
+                {
+                    socket.emit("rename-project", newname);
+                }
+                if (newtag)
+                {
+                    socket.emit("set-tagline", newtag);
+                }
+                $("#project-settings").modal("hide");
+            });
+        });
+        socket.on("set-name", function (name) {
+            projname = name;
+            if (projname)
+            {
+                $("#project-title").html(projname);
+            }
+            else
+            {
+                $("#project-title").text("Untitled Project");
+            }
+        });
+        socket.on("set-tagline", function (tagline) {
+            projtag = tagline;
+            if (projtag)
+            {
+                $("#project-tag").html("– " + projtag);
+            }
+            else
+            {
+                
+            }
+        });
 		
 		socket.on('file-change', function (filename, change) {
 			inserted = true;

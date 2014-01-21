@@ -3,21 +3,24 @@
 	<head>
 		<title>Snapcode: the fastest way to share code</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link href="/public/css/bootstrap.min.css" rel="stylesheet" />
+		<!--<link href="/public/css/bootstrap.min.css" rel="stylesheet" />-->
+        <link rel="stylesheet" href="/public/foundation/css/foundation.min.css" />
 		<link href="/public/login.css" rel="stylesheet" />
 		<link href='http://fonts.googleapis.com/css?family=Cuprum' rel='stylesheet' type='text/css'>
 	</head>
 	<body>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+		<!--<script src="/public/js/bootstrap.min.js"></script>-->
+		<script src="/public/foundation/js/foundation.min.js"></script>
 		<script src="/public/login.js"></script>
 		<table id="start" class="fillx filly">
 			<tr id="start-text" class="filly">
 				<td class="fillx filly">
-					<h1 id="brand">Snapcode</h1><br />
+					<h1 id="brand">Rocket.io</h1><br />
 					<!--<p id="slogan">The fastest way to share code</p><br />-->
 					<p id="description">Collaborate, ask questions, and get feedback.</p><br />
 					<!--<button id="uploadlink" type="button" class="btn btn-primary btn-lg">Upload Your Code</button>-->
-					<a href="/auth/google" id="google" type="button" class="btn btn-primary btn-lg">Sign in with Google</a>
+					<a href="/auth/google" id="google" type="button" class="button radius">Sign in with Google</a>
 					<!--<div id="signinButton">
 						<span class="g-signin"
 							data-scope="https://www.googleapis.com/auth/plus.login"

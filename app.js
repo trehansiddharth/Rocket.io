@@ -277,6 +277,35 @@ io.sockets.on('connection', function (socket) {
 			}
 		}
 	});
+    socket.on('get-properties', function () {
+        projects.findOne({ projid : socket.projid }, function (err, project) {
+            socket.emit('set-properties', { name : project.name, tagline : project.tagline });
+        });
+    });
+    socket.on('set-tagline', function (tagline) {
+        projects.update({ projid : socket.projid }, { $set : { tagline : tagline } }, function (err) {
+            if (err)
+            {
+                console.log(err);
+            }
+            else
+            {
+                io.sockets.in(socket.projid).emit('set-tagline', tagline);
+            }
+        });
+    });
+    socket.on('rename-project', function (name) {
+        projects.update({ projid : socket.projid }, { $set : { name : name } }, function (err) {
+            if (err)
+            {
+                
+            }
+            else
+            {
+                io.sockets.in(socket.projid).emit('set-name', name);
+            }
+        });
+    });
 });
 setInterval(function () {
 	var i = opendocuments.length;
@@ -641,6 +670,25 @@ app.post('/user/profile', function (request, response) {
             if (user)
             {
                 response.end(JSON.stringify(user));
+            }
+            else
+            {
+                response.end("ERROR: USER_NOT_FOUND");
+            }
+        }
+    });
+});
+app.post('/projects/name', function (request, response) {
+    projects.findOne({ projid : request.body.projid }, function (err, project) {
+        if (err)
+        {
+            response.end("ERROR: DATABASE_ERROR");
+        }
+        else
+        {
+            if (project)
+            {
+                response.end(project.name);
             }
             else
             {

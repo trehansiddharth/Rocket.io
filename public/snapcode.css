@@ -24,6 +24,51 @@ html, body {
 	height: 20px;
 	font-size: 0.1em;
 }*/
+tr.row-navbar {
+    height: 70px;
+    /*background-color: #F0F0E8;*/
+    background-color: black;
+    color: white;
+}
+tr.row-navbar > td {
+    position: relative;
+	/*-webkit-box-shadow: 0 0 2px 10px #666666;
+    box-shadow: 0 0 10px 2px #666666;*/
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: black;
+    z-index: 10;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+#project-heading {
+    font-size: 1.3em;
+}
+tr#basement {
+    color: #e3e3da; /*gray;*/
+    font-size: 0.9em;
+}
+.right-panel {
+    min-width: 500px;
+    text-align: right;
+}
+.super-small {
+    font-size: 0.5em;
+}
+.left-field {
+    margin-left: 5px;
+}
+.field {
+    margin-left: 5px;
+    margin-right: 20px;
+}
+tr#editbar {
+    height: 30px;
+    background-color: #F0F0E8;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: gray;
+}
 td.bar {
 	/*background-color: black;*/
 	position: relative;
@@ -37,9 +82,16 @@ td.bar {
     height: 35px;
     padding-top: 0px;
 }
-.left
+/*.left
 {
-	width: 210px;
+	width: 50px;
+}*/
+tr.none {
+    height: 0;
+}
+.sub-left
+{
+    width: 135px;
 }
 .right
 {
@@ -53,6 +105,7 @@ td.bar {
 .navbar {
 	margin-bottom: 0px;
 	padding-right: 10px;
+    background-color: black;
 }
 .box {
 	padding: 0px;
@@ -61,16 +114,22 @@ td.bar {
 .left {
 	position: relative;
 	padding: 0px;
-	-webkit-box-shadow: 0px 0 2px 10px #666666;
-	box-shadow: 0px 0 10px 2px #666666;
+	/*-webkit-box-shadow: 2px 3px 10px 0px #666666;
+	box-shadow: 2px 3px 10px 0px #666666;*/
+    border-right-style: solid;
+    border-right-width: 1px;
+    border-right-color: gray;
 	position: relative;
 	z-index: 1;
 }
 .right {
 	position: relative;
 	padding: 0px;
-	-webkit-box-shadow: 0px 0 2px 10px #666666;
-	box-shadow: 0px 0 10px 2px #666666;
+	/*-webkit-box-shadow: -2px 3px 10px 0px #666666;
+	box-shadow: -2px 3px 10px 0px #666666;*/
+    border-left-style: solid;
+    border-left-width: 1px;
+    border-left-color: gray;
 	position: relative;
 	z-index: 1;
 }
@@ -163,13 +222,45 @@ div.scrollable {
 	width: 500px;
 }
 #brand {
-	font-size: 1.5em;
+	font-size: 1.1em;
 	font-family: 'Cuprum', sans-serif;
 	font-style: italic;
-	color: white;
+	/*color: white;*/
+}
+img.logo {
+    width: 35px;
+    height: 35px;
+}
+td.logo {
+    width: 75px;
+    width: 75px;
+    text-align: center;
 }
 .nav-btns {
-	padding-top: 3px;
+    margin-top: 3px;
+}
+.right-panel > .btn-group {
+    margin-right: 10px;
+}
+.toolshed {
+    margin-right: 18px;
+    padding-top: 9px;
+    margin-left: 45px;
+}
+.tool {
+    font-size: 1.2em;
+    color: gray;
+    margin-right: 12px;
+    padding-bottom: 6px;
+}
+.tool-hovered {
+    color: white;
+}
+.tool-side {
+    color: white;
+    margin-top: 5px;
+    padding-top: 5px;
+    margin-right: 40px;
 }
 #upload-text {
 	color: gray;

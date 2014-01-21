@@ -5,8 +5,9 @@ html, body {
 	margin: 0px;
 	position: absolute;
 	padding: 0px;
-	/*overflow: hidden;*/
+	overflow-y: hidden;
 	overflow-x: hidden;
+    border: 0px;
 }
 /*#page {
 	padding: 0px;
@@ -17,6 +18,12 @@ html, body {
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
 }*/
+.button {
+    background-color: #0080ff !important;
+}
+.button:hover {
+    background-color: #005ff7 !important;
+}
 #cpfile
 {
 	width: 700px;
@@ -34,6 +41,11 @@ div.scrollable {
 	font-size: 3em;
 	font-family: 'Cuprum', sans-serif;
 	font-style: italic;
+    color: white;
+}
+img.logo {
+    height: 100px;
+    width: 100px;
 }
 .invisible-element {
 	display: none !important;
@@ -41,13 +53,14 @@ div.scrollable {
 #start {
 	font-size: 1em;
 	height: 100%;
-	background-color: #F0F0E8;
+	background-color: black; /*#F0F0E8;*/
 }
 #start-text {
 	height: 100vh;
-	color: gray;
+	color: white !important;
 	vertical-align: middle;
 	text-align: center;
+    background-color: black;
 }
 /*#top-middle {
 	width: 100%;
@@ -70,9 +83,11 @@ div.scrollable {
 }
 #slogan {
 	font-style: italic;
+    color: white;
 }
 #description {
 	font-size: 1.2em;
+    color: white;
 }
 #trending {
 	text-align: center;
@@ -98,12 +113,17 @@ div.scrollable {
 }
 table {
 	border: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
 }
 td {
 	padding: 0;
 	margin: 0;
+    border: 0;
 }
 tr {
 	padding: 0;
 	margin: 0;
+    outline: 0;
 }

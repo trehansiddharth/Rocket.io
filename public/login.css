@@ -17,6 +17,12 @@ html, body {
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
 }*/
+.button {
+    background-color: #0080ff !important;
+}
+.button:hover {
+    background-color: #005ff7 !important;
+}
 #cpfile
 {
 	width: 700px;
@@ -34,6 +40,7 @@ div.scrollable {
 	font-size: 3em;
 	font-family: 'Cuprum', sans-serif;
 	font-style: italic;
+    color: white;
 }
 .invisible-element {
 	display: none !important;
@@ -41,11 +48,11 @@ div.scrollable {
 #start {
 	font-size: 1em;
 	height: 100%;
-	background-color: #F0F0E8;
+	background-color: black;
 }
 #start-text {
 	height: 100vh;
-	color: gray;
+	color: white;
 	vertical-align: middle;
 	text-align: center;
 }

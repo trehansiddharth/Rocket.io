@@ -7,7 +7,7 @@
 		<link href="/public/snapcode.css" rel="stylesheet" />
 		<link href='http://fonts.googleapis.com/css?family=Cuprum' rel='stylesheet' type='text/css' />
 		<link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css' />
-		<link href='http://fonts.googleapis.com/css?family=Ubuntu+Mono' rel='stylesheet' type='text/css' />
+		<!--<link href='http://fonts.googleapis.com/css?family=Ubuntu+Mono' rel='stylesheet' type='text/css' />-->
 	</head>
 	<body>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -18,20 +18,25 @@
 		<script src="/public/ace/src/ext-modelist.js"></script>
 		<table id="page" class="fillx filly">
 			<tr class="row-navbar">
-				<td colspan="3" class="bar navbar navbar-static-top navbar-inverse navbar-default">
+				<!--<td colspan="3" class="bar navbar navbar-static-top navbar-inverse navbar-default">
 					<div class="navbar-inner">
 						<div class="float-left">
 							<ul class="nav navbar-nav">
-								<li><a id="brand" class="pointing">Snapcode</a></li>
+								<li><a id="brand" class="pointing">liri.io</a></li>
+                        <li><div class="toolshed">
+                            <i id="post" class="pointing tool glyphicon glyphicon-bullhorn" data-toggle="tooltip" data-placement="bottom" data-original-title="Ask a question or post an update"></i>
+                            <i id="notifications" class="pointing tool glyphicon glyphicon-globe" data-toggle="tooltip" data-placement="bottom" data-original-title="Check for notifications"></i>
+                            <i id="edit" class="pointing tool glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="bottom" data-original-title="Edit this project's public settings"></i><!--<span class="tool-side"> Python Longest Streak Problem</span>-->
+                        <!--</div></li>
 							<ul>
 						</div>
 						<div class="pull-right nav-btns">
 							<div class="btn-group">
-                                <a id="promote" type="button" class="btn btn-warning btn-sm"><i class="glyphicon glyphicon-star-empty"></i> Follow</a>
-								<a id="opensync" type="button" onclick="return opensync();" class="btn btn-success btn-sm"><i class="glyphicon glyphicon-refresh"></i> Sync</a>
-								<a id="signin" type="button" class="btn btn-primary btn-sm"><i class="glyphicon glyphicon-log-in"></i> Sign in</a>
+                                <a id="promote" type="button" class="btn btn-warning btn-sm" data-toggle="tooltip" data-placement="bottom" data-original-title="Get notified when this project posts updates"><i class="glyphicon glyphicon-star-empty"></i> Follow</a>
+								<a id="opensync" type="button" onclick="return opensync();" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="bottom" data-original-title="Make a local copy of this project that synchronizes with the online version"><i class="glyphicon glyphicon-refresh"></i> Sync</a>
+								<a id="signin" type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" data-original-title="Sign in to follow projects, post updates, and ask questions"><i class="glyphicon glyphicon-log-in"></i> Sign in</a>
 							</div>
-						</div>
+						</div>-->
 						<!--<div class="collapse navbar-collapse">
 							<ul class="nav navbar-nav navbar-right">
 								<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-flash"></i> SnapSync <b class="caret"></b></a>
@@ -51,11 +56,50 @@
 								</li>
 							</ul>
 						</div>-->
-					</div>
-				</td>
+					<!--</div>
+				</td>-->
+                <td class="logo">
+                    <img class="logo pointing" src="/public/rocket_white.png"></img> <br />
+                    <span id="brand">Rocket.io</span>
+                </td>
+                <td colspan="3">
+                    <table id="heading" class="fillx filly">
+                        <tr id="attic">
+                            <td id="project-heading" class="fillx">
+                                <span><i class="glyphicon glyphicon-globe"></i> <span id="project-title"></span> <span id="project-tag"></span></span> <i id="edit" class="pointing tool glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="bottom" data-original-title="Edit this project's public settings">
+                            </td>
+                            <td class="right-panel">
+                                <div class="btn-group">
+                                    <a id="download" type="button" onclick="return projdownload();" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="bottom" data-original-title="Download project as a zip file"><i class="glyphicon glyphicon-cloud-download"></i> Download</a>
+                                    <a id="opensync" type="button" onclick="return opensync();" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="bottom" data-original-title="Make a local copy of this project that synchronizes with the online version"><i class="glyphicon glyphicon-refresh"></i> Sync</a>
+                                </div>
+                                <a id="promote" type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" data-original-title="Get notified when this project posts updates"><i class="glyphicon glyphicon-star-empty"></i> Follow</a>
+                            </td>
+                        </tr>
+                        <tr id="basement">
+                            <td class="fillx">
+                                <!--<span class="field">Powered by <a href="/" target="_blank" id="brand">Rocket.io</a></span>-->
+                                <i class="glyphicon glyphicon-link"></i> Share this project: rocket.io/p/<span id="projid"></span>
+                            </td>
+                            <td class="right-panel">
+                                <!--<span id="opensync" onclick="return opensync();" class="pointing field" data-toggle="tooltip" data-placement="bottom" data-original-title="Make a local copy of this project that synchronizes with the online version"><i class="glyphicon glyphicon-refresh"></i> Sync</span>-->
+                                <i class="glyphicon glyphicon-bullhorn"></i> <span id="posts-field" class="field pointing">Posts (1)</span>
+                                <i class="glyphicon glyphicon-comment"></i> <span id="comments-field" class="left-field pointing">Comments (12)</span>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
 			</tr>
+            <tr class="none filly">
+                <td>
+                </td>
+                <td class="sub-left">
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
 			<tr class="filly">
-				<td class="left filly">
+				<td colspan="2" class="left filly">
 					<table id="leftbox" class="filly">
 						<tr class="fillx filly">
 							<td>
@@ -77,17 +121,22 @@
 				</td>
 				<td class="filly box">
 					<div class="fillx filly scrollable">
-						<div id="editor" class="fillx filly invisible-element">
-							
-						</div>
-						<table id="start" class="invisible-element fillx filly">
+                        <table class="fillx filly">
+                            <tr id="editbar">
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><div id="editor" class="fillx filly invisible-element"></div></td>
+                            </tr>
+                        </table>
+						<!--<table id="start" class="invisible-element fillx filly">
 							<tr id="start-text" class="filly">
 								<td class="fillx filly">
 									<h2>You don't have any files :(</h2><br />
 									<button id="uploadlink" type="button" class="btn btn-primary btn-lg">Upload Code</button>
 								</td>
 							</tr>
-						</table>
+						</table>-->
 					</div>
 				</td>
 				<td class="right filly">
@@ -211,6 +260,35 @@
 					</div>
 					<div class="modal-footer">
 						<button id="file-settings-save" type="button" class="btn btn-primary"><i class="glyphicon glyphicon-ok"></i> Save</button>
+					</div>
+				</div>
+			</div>
+		</div>
+        <div id="project-settings" class="modal fade">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 id="project-settings-title" class="modal-title">Project Settings</h4>
+					</div>
+					<div class="modal-body">
+						<form class="form-horizontal">
+							<fieldset>
+								<label for="project-name" class="col-sm-3 col-md-3 control-label">Project name</label>
+								<div class="col-sm-9 col-md-9">
+									<input type="text" class="form-control" id="project-name"></input><br />
+								</div>
+							</fieldset>
+							<fieldset>
+								<label for="project-tagline" class="col-sm-3 col-md-3 control-label">Project tagline</label>
+								<div class="col-sm-9 col-md-9">
+									<input type="text" class="form-control" id="project-tagline"></input><br />
+								</div>
+							</fieldset>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button id="project-settings-save" type="button" class="btn btn-primary"><i class="glyphicon glyphicon-ok"></i> Save</button>
 					</div>
 				</div>
 			</div>

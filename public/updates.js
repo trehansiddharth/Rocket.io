@@ -71,9 +71,22 @@ add_update = function (updates, i) {
                 else
                 {
                     var user = jQuery.parseJSON(data);
-                    $("#updates").prepend(html_follow(user.picture, update.user, user.name, update.projid, pretty_time(update.time)));
+                    $.post("/projects/name", { projid : update.projid }, function (projname) {
+                        if (!projname)
+                        {
+                            projname = "Untitled project";
+                        }
+                        if (projname.slice(0, 5) == "ERROR")
+                        {
+                            
+                        }
+                        else
+                        {
+                            $("#updates").prepend(html_follow(user.picture, update.user, user.name, update.projid, projname, pretty_time(update.time)));
+                        }
+                        add_update(updates, i + 1);
+                    });
                 }
-                add_update(updates, i + 1);
             });
         }
     }
@@ -84,10 +97,12 @@ add_update = function (updates, i) {
         }, function () {
             $(this).removeClass("hovered");
         });
+        $("#loading").addClass("invisible-element");
+        $("#updates-holder").removeClass("invisible-element");
     }
 }
 
-html_follow = function (picture, userid, name, projid, time) {
+html_follow = function (picture, userid, name, projid, projname, time) {
     return "\
 <tr class=\"spacer\"></tr>\
 <tr class=\"update\">\
@@ -96,8 +111,8 @@ html_follow = function (picture, userid, name, projid, time) {
     </td>\
     <td class=\"text fillx\">\
         <table class=\"update-inner fillx\">\
-            <td class=\"activity\"><p><a target=\"_blank\" href=\"/u/" + userid + "\">" + name + "</a> is following the project <a target=\"_blank\" href=\"/p/" + projid  + "\">" + projid + "</a></p></td>\
-            <td class=\"peripheral\"><p>" + time + "</p></td>\
+            <td class=\"activity\"><p class=\"activity\"><a target=\"_blank\" href=\"/u/" + userid + "\">" + name + "</a> is following <a target=\"_blank\" href=\"/p/" + projid  + "\">" + projname + "</a></p></td>\
+            <td class=\"peripheral\"><p class=\"peripheral\">" + time + "</p></td>\
             <td class=\"fillx\"></td>\
         </table>\
     </td>\
@@ -125,6 +140,12 @@ pretty_time = function (time) { // TODO: fix for time zones
         var minutes = timestring.split(":")[1];
         var phase = timestring.slice(-2);
         return "Yesterday at " + hours + ":" + minutes + " " + phase;
+    }
+    else if (dateobj.getDate() != new Date().getDate() && dateobj.getDate() != new Date().getDate() - 1)
+    {
+        var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        var str_month = months[dateobj.getMonth()];
+        return str_month + " " + dateobj.getDate() + ", " + dateobj.getFullYear();
     }
     else if (difference < one_hour)
     {
