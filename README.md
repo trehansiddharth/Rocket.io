@@ -1,9 +1,9 @@
-snapcode
+Rocket.io
 ========
 
 A collaborative, web-based code editor with local build capabilities
 
-Snapcode requires Node.js to be installed first.
+Rocket.io requires Node.js to be installed first.
 
 To deploy, run the following commands in the root directory of the project:
 
